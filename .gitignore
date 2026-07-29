@@ -1,0 +1,4 @@
+# Obsidian 缓存文件不要提交
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
