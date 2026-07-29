@@ -1,0 +1,11 @@
+{
+  "editor:insert-wikilink": [
+    {"modifiers": ["Mod"], "key": "k"}
+  ],
+  "graph:open": [
+    {"modifiers": ["Mod", "Shift"], "key": "g"}
+  ],
+  "command-palette:open": [
+    {"modifiers": ["Mod"], "key": "p"}
+  ]
+}

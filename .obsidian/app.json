@@ -1,0 +1,11 @@
+{
+  "promptDelete": false,
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "shortest",
+  "showUnsupportedFiles": true,
+  "attachmentFolderPath": "./图片",
+  "spellcheck": false,
+  "showFrontmatter": false,
+  "tabSize": 2,
+  "strictLineBreaks": true
+}
