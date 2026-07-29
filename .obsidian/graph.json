@@ -9,11 +9,17 @@
   "colorGroups": [
     {
       "query": "path:CLAW",
-      "color": {"a": 1, "rgb": 3722752}
+      "color": {
+        "a": 1,
+        "rgb": 3722752
+      }
     },
     {
       "query": "path:pcbc",
-      "color": {"a": 1, "rgb": 12881751}
+      "color": {
+        "a": 1,
+        "rgb": 12881751
+      }
     }
   ],
   "collapse-display": false,
@@ -26,5 +32,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 0.8
+  "scale": 0.4070095084634065,
+  "close": true
 }
