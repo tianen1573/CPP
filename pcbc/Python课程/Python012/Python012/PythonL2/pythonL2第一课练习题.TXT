@@ -1,0 +1,11 @@
+7>8 and False
+
+9<6 or True
+
+8 and 9==True
+
+7 !=True and 8<=9
+
+10>6 and 1==True
+
+False==0 and 9>8

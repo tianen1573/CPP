@@ -1,0 +1,51 @@
+**********关键字**********
+while	条件循环关键字
+if	如果关键字
+else	否则关键字
+elif	否则如果关键字
+True	正确关键字
+False	错误关键字
+del	删除关键字
+def	定义函数关键字
+return	返回值关键字
+and	与关键字
+or	或关键字
+not	非关键字
+for	计数循环关键字
+break	退出循环关键字
+continue	跳过（跳过本次循环进入下一次循环）关键字
+**********内置函数（方法）**********
+print()	输出
+input()	输入
+int()	整数类型转换
+float()	浮点数（小数）类型转换
+str()	字符串类型转换
+bool()	布尔值类型转换
+list()	列表
+dict()	字典
+tuple()	元组
+range()	范围函数
+**********其它方法**********
+当a作为一个列表或者字典时可使用以下对应方法
+a.append(元素)	列表末尾添加元素
+a.insert(索引,元素)	列表索引位置插入元素
+a.pop(键)		删除字典对应键的项
+a.pop(索引)	删除列表对应索引的项
+a.clear()		清空列表或字典所有项
+a.get(键)		访问字典对应键的值
+**********海龟库方法**********
+import turtle as t  导入海龟库并改名为t
+t.circle(100)       画圆
+t.forward(100)     画线
+t.right(90)         右转
+t.left(90)          左转
+t.color(‘red’)   设置颜色为红色
+t.goto(100,50)    去x100，y50的坐标位置
+t.penup()         抬笔
+t.pendown()      落笔
+t.pensize(5)      画笔粗细
+t.begin_fill()      开始填充
+t.end_fill()       结束填充
+t.bgcolor()       背景颜色
+t.pencolor()      画笔颜色
+t.fillcolor()       填充颜色

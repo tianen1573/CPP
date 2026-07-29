@@ -1,0 +1,14 @@
+import turtle
+turtle.pensize(10)
+def hg(r1,l1,r2,r3,l3):
+    turtle.left(r1)
+    turtle.forward(l1)
+    turtle.left(r2)
+    turtle.circle(-30)
+    turtle.right(r3)
+    turtle.forward(l3)
+hg(120,200,30,180,140)
+hg(100,140,90,-150,140)
+hg(100,140,90,240,230)
+turtle.goto(0,0)
+turtle.done()

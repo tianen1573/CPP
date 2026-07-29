@@ -1,0 +1,26 @@
+import turtle as t
+t.speed(6)
+t.pensize(5)
+t.dot(10)
+t.pu()
+t.goto(0,-20)
+t.circle(20,130)
+t.pd()
+t.circle(20,100)
+
+t.pu()
+t.circle(20,130)
+t.goto(0,-40)
+t.circle(40,130)
+t.pd()
+t.circle(40,100)
+
+t.pu()
+t.circle(40,130)
+t.goto(0,-60)
+t.circle(60,130)
+t.pd()
+t.circle(60,100)
+
+t.ht()
+t.done()

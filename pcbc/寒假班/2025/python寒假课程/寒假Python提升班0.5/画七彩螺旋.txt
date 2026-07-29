@@ -1,0 +1,15 @@
+import turtle
+from random import randint
+a=randint(0,255)
+b=randint(0,255)
+c=randint(0,255)
+turtle.colormode(255)
+j = int(input("你要做多少个螺旋圈"))
+for i in range(j):
+    a = randint(0, 255)
+    b = randint(0, 255)
+    c = randint(0, 255)
+    turtle.color(a, b, c)
+    turtle.forward(i)
+    turtle.right(91)
+turtle.done()

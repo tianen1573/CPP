@@ -1,0 +1,48 @@
+import turtle as t
+t.speed(0.1)
+t.pensize(5)
+def sds(l1,r2,x,a,b):
+    t.fillcolor("green")
+    t.begin_fill()
+    t.right(120)
+    t.forward(l1)
+    t.left(r2)
+    for j in range(4):
+        t.circle(x, 180)
+        t.left(180)
+    t.right(150)
+    t.forward(l1)
+    t.left(60)
+    #t.forward(l2)
+    t.goto(a,b)
+    t.end_fill()
+sds(80,30,21,0,0)
+t.penup()
+t.goto(0,30)
+t.pendown()
+
+t.setheading(0)
+sds(60,30,18,0,30)
+t.penup()
+t.goto(0,50)
+t.pendown()
+
+t.setheading(0)
+sds(40,30,15,0,50)
+t.penup()
+t.goto(0,70)
+t.pendown()
+
+t.setheading(0)
+sds(20,30,12,0,70)
+t.penup()
+t.goto(0,70)
+t.pendown()
+
+t.color("yellow")
+t.begin_fill()
+for i in range(5):
+    t.right(144)
+    t.forward(80)
+t.end_fill()
+t.done()

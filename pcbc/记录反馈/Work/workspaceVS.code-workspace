@@ -1,0 +1,37 @@
+{
+	"folders": [
+		{
+			"name": "VsCode",
+			"path": "VsCode"
+		},
+		{
+			"path": "..\\C++"
+		}
+	],
+	"settings": {
+		"files.autoGuessEncoding": true,
+		"files.associations": {
+			"xutility": "cpp",
+			"iostream": "cpp",
+			"iosfwd": "cpp",
+			"queue": "cpp",
+			"stack": "cpp",
+			"vector": "cpp",
+			"utility": "cpp",
+			"xtree": "cpp",
+			"array": "cpp",
+			"bitset": "cpp",
+			"string_view": "cpp",
+			"initializer_list": "cpp",
+			"regex": "cpp",
+			"valarray": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"random": "cpp",
+			"type_traits": "cpp",
+			"xhash": "cpp",
+			"xstring": "cpp"
+		},
+		"liveServer.settings.multiRootWorkspaceName": "tianen.github.io"
+	}
+}

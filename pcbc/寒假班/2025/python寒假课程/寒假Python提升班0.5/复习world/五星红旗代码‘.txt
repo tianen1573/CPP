@@ -1,0 +1,30 @@
+import turtle as t
+t.bgcolor("red")
+
+
+def star(x,y,size):
+    t.speed(0)
+    t.pensize(3)
+    t.color("yellow")
+    t.pu()
+    t.goto(x,y)
+    t.pd()
+    a=0
+    t.begin_fill()
+    while a<5:
+        t.forward(size)
+        t.right(144)
+        a=a+1
+    t.end_fill()
+
+star(-250,200,180)
+t.lt(50)
+star(-40,270,40)
+t.right(30)
+star(10,220,40)
+t.lt(55)
+star(30,130,40)
+t.lt(55)
+star(0,60,40)
+t.hideturtle()
+t.done()
