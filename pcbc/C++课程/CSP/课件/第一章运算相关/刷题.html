@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSP-J 位运算与进制 · 练习</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --correct-bg: #dcfce7;
+    --wrong-bg: #fce4ec;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--card-bg);
+    padding: 6px 8px;
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .nav-tab {
+    flex: 1; min-width: 80px;
+    padding: 10px 12px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+  .main-content {
+    max-width: 720px; margin: 0 auto; padding: 0 16px 80px;
+    transition: opacity var(--transition);
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+    transition: var(--transition);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-badge {
+    font-size: 12px; padding: 2px 10px;
+    border-radius: 12px;
+    background: #e2e8f0; color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.7; margin-bottom: 16px;
+  }
+  .q-text code, .q-text pre {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .q-text code { padding: 2px 6px; }
+  .q-text pre {
+    padding: 12px 16px; margin: 8px 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    font-size: 14px; line-height: 1.5;
+    text-align: left; width: 100%;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .option .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #94a3b8; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .option.selected .radio { border-color: var(--accent); background: var(--accent); }
+  .option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+  .option.selected { border-color: var(--accent); background: #eef2ff; }
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .radio { border-color: var(--correct); background: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake 0.4s ease; }
+  .option.wrong .radio { border-color: var(--wrong); background: var(--wrong); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+
+  .judge-options { display: flex; gap: 12px; }
+  .judge-btn {
+    flex: 1; padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px; font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+    background: transparent;
+  }
+  .judge-btn:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .judge-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .judge-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .judge-btn.selected { border-color: var(--accent); background: #eef2ff; }
+  .judge-btn.disabled { cursor: default; }
+  .judge-btn.no-feedback { animation: none !important; }
+  .option.no-feedback { animation: none !important; }
+
+  .explanation {
+    margin-top: 16px; padding: 14px 16px;
+    background: #f8fafc; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px; line-height: 1.7;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.show { display: block; }
+
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 20px;
+  }
+  .nav-buttons button {
+    padding: 10px 24px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    display: flex; gap: 4px; margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: var(--transition);
+    background: #f8fafc;
+  }
+  .progress-dot.answered { background: #eef2ff; border-color: var(--accent); color: var(--accent); }
+  .progress-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .progress-dot.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .progress-dot.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* Overlay - Password / Result */
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  .overlay-box h2 { font-size: 20px; margin-bottom: 12px; }
+  .overlay-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    font-size: 18px; letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .pw-input:focus { border-color: var(--accent); }
+  .pw-error { color: var(--wrong); font-size: 13px; margin-top: 8px; display: none; }
+  .score-big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .stat-item { padding: 12px; background: #f8fafc; border-radius: 8px; }
+  .stat-item .label { font-size: 12px; color: var(--text-secondary); }
+  .stat-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+  .error-list { margin-top: 16px; text-align: left; }
+  .error-list summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); padding: 8px 0; }
+  .error-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 17px; }
+    .nav-tabs { margin: 12px 8px 0; padding: 4px; }
+    .main-content { padding: 0 8px 60px; }
+    .card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .option { padding: 10px 12px; font-size: 13px; }
+    .overlay-box { padding: 20px; }
+    .score-big { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>CSP-J 位运算与进制 · 练习</h1>
+  <p>进制转换 · 原反补 · 位运算 · 逻辑运算 · 位操作技巧</p>
+</div>
+
+<div class="nav-tabs" id="modeTabs">
+  <button class="nav-tab active" data-mode="practice">📝 练习</button>
+  <button class="nav-tab" data-mode="quiz">⚡ 刷题</button>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<!-- 刷题密码弹窗 -->
+<div class="overlay" id="pwOverlay">
+  <div class="overlay-box">
+    <h2>🔒 刷题模式</h2>
+    <p>请输入老师提供的 6 位密码</p>
+    <input type="password" class="pw-input" id="pwInput" maxlength="6" inputmode="numeric" autocomplete="off">
+    <div class="pw-error" id="pwError">❌ 密码错误，请重试</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closePw()">取消</button>
+      <button class="btn-primary" style="flex:1;" onclick="checkPw()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 练习结果弹窗 -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-box">
+    <h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">0/0</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong id="showPw"></strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" id="resultCorrect" style="color:var(--correct)">0</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" id="resultWrong" style="color:var(--wrong)">0</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value" id="resultRate">0%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value" id="resultTime">0s</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResult()">返回练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>
+  </div>
+</div>
+
+<script>
+// ========== 题库数据 ==========
+// ⚠️ 老师修改题目：直接编辑下面这个数组即可，不要改动下方代码
+// ⚠️ 刷题密码在下方 PASSWORD 变量
+const QUESTION_BANK = [
+  { "id":1, "type":"single", "question":"二进制 <code>11001010</code> 转换为八进制是？", "options":["A. 302","B. 312","C. 202","D. 310"], "answer":"B", "score":3 },
+  { "id":2, "type":"single", "question":"十六进制 <code>0x3F</code> 等于二进制多少？", "options":["A. <code>00111111</code>","B. <code>00101111</code>","C. <code>00111110</code>","D. <code>01011111</code>"], "answer":"A", "score":3 },
+  { "id":3, "type":"single", "question":"表达式 <code>0xA + 0xB</code> 的结果用二进制表示为？", "options":["A. <code>10101</code>","B. <code>10001</code>","C. <code>11110</code>","D. <code>10100</code>"], "answer":"A", "score":3 },
+  { "id":4, "type":"single", "question":"十进制数 <code>-15</code> 用 8 位补码表示为？", "options":["A. <code>11110001</code>","B. <code>11110000</code>","C. <code>00001111</code>","D. <code>11101111</code>"], "answer":"A", "score":3 },
+  { "id":5, "type":"single", "question":"8 位补码 <code>11100101</code> 对应的十进制值为？", "options":["A. −27","B. −26","C. −25","D. −24"], "answer":"A", "score":3 },
+  { "id":6, "type":"single", "question":"对 8 位补码整数 x，若 <code>x = 0x80</code>，则 <code>x << 1</code> 的结果是？", "options":["A. 0x00","B. 0x100","C. 256","D. 溢出，未定义行为"], "answer":"A", "score":3 },
+  { "id":7, "type":"single", "question":"在补码表示中，关于 <code>−x</code> 与 <code>x</code> 的关系，下列说法正确的是？", "options":["A. <code>−x</code> 等于 <code>x</code> 按位取反","B. <code>−x</code> 等于 <code>x</code> 按位取反再加 1","C. <code>−x</code> 与 <code>x</code> 按位与的结果总是 0","D. <code>−x</code> 与 <code>x</code> 按位或的结果总是全 1"], "answer":"B", "score":3 },
+  { "id":8, "type":"single", "question":"补码的最大优点是？", "options":["A. 符号位可以参与运算","B. 正数和负数的转换规则相同","C. 0 有两种表示","D. 表示范围比原码小"], "answer":"A", "score":3 },
+  { "id":9, "type":"single", "question":"<code>(8 & 12) | (4 ^ 7)</code> 的值是？", "options":["A. 11","B. 13","C. 8","D. 15"], "answer":"A", "score":3 },
+  { "id":10, "type":"single", "question":"表达式 <code>(−1 >> 3) ^ (−1 << 2)</code> 的结果是？", "options":["A. −9","B. 7","C. −3","D. 3"], "answer":"D", "score":3 },
+  { "id":11, "type":"single", "question":"表达式 <code>~0xA5</code> 在 8 位无符号数下的值是多少？", "options":["A. 0x5A","B. 0x5B","C. 0xA6","D. 0x3A"], "answer":"A", "score":3 },
+  { "id":12, "type":"single", "question":"若 <code>a = 0x5A</code>，<code>b = 0xA5</code>，则 <code>a ^ b</code> 的十进制值为？", "options":["A. 255","B. 256","C. 127","D. 128"], "answer":"A", "score":3 },
+  { "id":13, "type":"single", "question":"在 C++ 中，以下说法正确的是？", "options":["A. unsigned int 右移是算术右移","B. int 右移是算术右移","C. char 右移总是逻辑右移","D. unsigned int 左移高位丢弃，低位补符号位"], "answer":"B", "score":3 },
+  { "id":14, "type":"single", "question":"判断正整数 n 是否为 2 的幂，以下哪个条件是正确的？", "options":["A. <code>(n & -n) == n</code>","B. <code>(n & (n-1)) == n</code>","C. <code>(n & (n+1)) == 0</code>","D. <code>(n & 1) == 0</code>"], "answer":"A", "score":3 },
+  { "id":15, "type":"single", "question":"表达式 <code>n & (−n)</code> 的作用是？", "options":["A. 取出 n 的最低位的 1","B. 清除 n 的最低位的 1","C. 统计 n 中 1 的个数","D. 将 n 最高位变为 0"], "answer":"A", "score":3 },
+  { "id":16, "type":"single", "question":"正整数 <code>x = 36</code>，<code>__builtin_ctz(x)</code> 的值是？", "options":["A. 2","B. 3","C. 4","D. 5"], "answer":"A", "score":3 },
+  { "id":17, "type":"single", "question":"在 C++ 中，<code>(x & 1) == 0</code> 可以判断 x 为偶数，其原理是？", "options":["A. & 1 取 x 的最高位","B. & 1 取 x 的最低位，偶数最低位为 0","C. & 1 取 x 的符号位","D. & 1 取 x 的所有位"], "answer":"B", "score":3 },
+  { "id":18, "type":"single", "question":"正整数 24 的二进制 <code>11000</code>，对其执行一次 <code>n &= n - 1</code> 后，n 的值是？", "options":["A. 16","B. 8","C. 12","D. 0"], "answer":"A", "score":3 },
+  { "id":19, "type":"single", "question":"对正整数 n，<code>n & (n - 1) == 0</code> 成立时，说明 n 是？", "options":["A. 奇数","B. 偶数","C. 2 的幂","D. 质数"], "answer":"C", "score":3 },
+  { "id":20, "type":"single", "question":"在 C++ 中，<code>__builtin_popcount(0b10101010)</code> 的值是？", "options":["A. 3","B. 4","C. 5","D. 8"], "answer":"B", "score":3 },
+  { "id":21, "type":"judge", "question":"任意正整数 n，<code>n & (n + 1)</code> 的结果一定是偶数？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":22, "type":"judge", "question":"8 位补码中，<code>0x80</code> 等于 −128？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":23, "type":"judge", "question":"表达式 <code>(x ^ y) ^ y</code> 在 C++ 中对任意整数 x、y 一定等于 x？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":24, "type":"judge", "question":"十进制小数 0.2 可以用二进制精确表示？", "options":["✓ 正确","✗ 错误"], "answer":"B", "score":4 },
+  { "id":25, "type":"judge", "question":"C++ 中，<code>-1 >> 1</code> 的结果是 0？", "options":["✓ 正确","✗ 错误"], "answer":"B", "score":4 },
+  { "id":26, "type":"judge", "question":"对正整数 n，<code>n & 1</code> 和 <code>n % 2</code> 判断奇偶的结果总是相同的？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":27, "type":"judge", "question":"一个数的补码与其相反数的补码相加等于 0？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":28, "type":"judge", "question":"在 C++ 中，<code>~0</code> 的值等于 −1？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":29, "type":"judge", "question":"对任意 8 位整数 x，<code>(unsigned char)x</code> 的值一定大于等于 0？", "options":["✓ 正确","✗ 错误"], "answer":"A", "score":4 },
+  { "id":30, "type":"judge", "question":"对正整数 n，表达式 <code>n & (n - 1)</code> 一定比 n 大？", "options":["✓ 正确","✗ 错误"], "answer":"B", "score":4 }
+];
+
+// ========== 刷题密码（老师可改） ==========
+const PASSWORD = "730291";
+
+// ========== 解析数据 ==========
+const EXPLANATIONS = {
+  1: "11001010₂ 从右向左三位一组：011→3, 001→1, 11补0成011→3 → 312₈",
+  4: "+15 = 00001111₂，取反得 11110000₂，加 1 得 11110001₂",
+  5: "最高位 1 → 负数。取反：11100101→00011010，加1→00011011=27，加负号得−27",
+  6: "0x80 = 10000000₂ = −128。左移1位：1 0000 0000，8位下高位丢弃得 00000000 = 0x00",
+  7: "补码求相反数的定义：−x = ~x + 1。缺加1就是错的",
+  8: "补码核心优势：符号位参与加法运算，CPU只需加法器",
+  10: "−1全1。算术右移3位仍为−1。−1<<2 = −4。−1 ^ −4 = 3",
+  14: "两种判断2的幂：(n & -n) == n 或 (n & (n-1)) == 0",
+  15: "n & (−n) = lowbit，取出最低位1对应的数值",
+  18: "24 = 11000₂，最低位1在bit3(8)。24&23=11000&10111=10000=16",
+  19: "n & (n-1) == 0 ⇒ n的二进制只有1个1 ⇒ 2的幂",
+  21: "n与n+1二进制最低位必然不同（一个0一个1），与的结果最低位必为0 ⇒ 偶数",
+  24: "0.2 = 1/5，二进制无限循环 0.00110011...，无法精确表示",
+  25: "−1全1，算术右移仍为全1 = −1",
+  30: "n & (n-1) 清除最低位1，结果 ≤ n-1 < n，一定小于n"
+};
+function getExplanation(id) { return EXPLANATIONS[id] || ""; }
+
+// ========== State ==========
+const TOTAL = QUESTION_BANK.length;
+let mode = 'practice';
+let practiceAnswers = new Array(TOTAL).fill(null);
+let practiceStartTime = null;
+let quizAnswers = new Array(TOTAL).fill(null);
+let currentIdx = 0;
+let quizUnlocked = false;
+
+const TOTAL_SCORE = QUESTION_BANK.reduce((s, q) => s + q.score, 0);
+
+// ========== Rendering ==========
+function render() {
+  const c = document.getElementById('mainContent');
+  if (mode === 'practice') renderPracticeSubmit();
+  else if (mode === 'quiz' && !quizUnlocked) renderQuizLocked();
+  else if (mode === 'quiz' && quizUnlocked) renderQuiz();
+}
+
+function renderPractice() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderPracticeSubmit() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '<div style="text-align:center;margin-top:16px;"><button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">📥 交卷</button></div>';
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderQuizLocked() {
+  document.getElementById('pwOverlay').classList.add('show');
+  document.getElementById('mainContent').innerHTML = '<div class="tab-panel active" style="text-align:center;padding:40px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:12px;">🔒</p><p>刷题模式需密码验证</p><p style="font-size:13px;margin-top:4px;">请联系老师获取 6 位密码</p></div>';
+}
+
+function renderQuiz() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let html = '<div class="tab-panel active">';
+  html += renderProgressBar('quiz');
+  html += renderQuestionCard('quiz');
+  html += `</div>`;
+  c.innerHTML = html;
+}
+
+function renderProgressBar(m) {
+  let html = '<div class="progress-bar">';
+  for (let i = 0; i < TOTAL; i++) {
+    let cls = 'progress-dot';
+    let ans = m === 'practice' ? practiceAnswers[i] : quizAnswers[i];
+    if (i === currentIdx) cls += ' current';
+    else if (ans !== null) cls += ' answered';
+    html += `<div class="${cls}" onclick="${m === 'practice' ? `goPractice(${i})` : `goQuiz(${i})`}" style="cursor:pointer;">${i + 1}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(m) {
+  const q = QUESTION_BANK[currentIdx];
+  const isPractice = m === 'practice';
+  const isQuiz = m === 'quiz';
+  const state = isPractice ? practiceAnswers : quizAnswers;
+  const val = state[currentIdx];
+
+  const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const qText = q.question;
+
+  // In practice mode, if already answered, show which we picked but no feedback
+  // In quiz mode, show feedback immediately
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <span class="q-number">${q.id}</span>
+      <span class="q-badge">${q.type === 'judge' ? '判断题' : '选择题'} · ${q.score}分</span>
+    </div>
+    <div class="q-text">${qText}</div>`;
+
+  if (q.type === 'single') {
+    html += '<div class="options">';
+    for (let oi = 0; oi < q.options.length; oi++) {
+      let cls = 'option';
+      if (isQuiz) {
+        if (val !== null) {
+          if (oi === ansIdx) cls += ' correct';
+          if (val === oi && oi !== ansIdx) cls += ' wrong';
+          if (val === oi) cls += ' selected';
+        }
+      } else if (isPractice && val !== null) {
+        if (val === oi) cls += ' selected disabled';
+      }
+      // Practice: no wrong/correct feedback
+      if (isPractice) cls += ' no-feedback';
+      const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+      html += `<button class="${cls}" onclick="${onclick}">
+        <span class="radio"></span><span>${q.options[oi]}</span>
+      </button>`;
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="judge-options">';
+    for (let oi = 0; oi < 2; oi++) {
+      let cls = 'judge-btn';
+      if (isQuiz) {
+        if (val !== null) {
+          if (oi === ansIdx) cls += ' correct';
+          if (val === oi && oi !== ansIdx) cls += ' wrong';
+          if (val === oi) cls += ' selected';
+        }
+      } else if (isPractice && val !== null) {
+        if (val === oi) cls += ' selected disabled';
+      }
+      // Practice: no wrong/correct feedback
+      if (isPractice) cls += ' no-feedback';
+      const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+      html += `<button class="${cls}" onclick="${onclick}">${q.options[oi]}</button>`;
+    }
+    html += '</div>';
+  }
+
+  // Show explanation: quiz mode or practice review mode
+  if (isQuiz && val !== null && getExplanation(q.id)) {
+    html += '<div class="explanation show"><strong>📖 解析：</strong>' + getExplanation(q.id) + '</div>';
+  }
+
+  // Nav buttons
+  html += '<div class="nav-buttons">';
+  if (isPractice) {
+    html += `<button class="btn-secondary" onclick="prevPractice()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextPractice()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  } else {
+    html += `<button class="btn-secondary" onclick="prevQuiz()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextQuiz()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  }
+  html += '</div>';
+
+  // Practice: submit button after last question
+  if (isPractice && currentIdx === TOTAL - 1) {
+    let answered = practiceAnswers.filter(a => a !== null).length;
+    html += `<div style="text-align:center;margin-top:16px;">
+      <button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">${answered === TOTAL ? '📥 交卷' : `📥 交卷（已答 ${answered}/${TOTAL}）`}</button>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ===== Practice Actions ===== */
+function selectPractice(idx, oi) {
+  practiceAnswers[idx] = oi;
+  if (!practiceStartTime) practiceStartTime = Date.now();
+  render();
+}
+
+function prevPractice() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextPractice() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goPractice(i) { currentIdx = i; render(); }
+
+function submitPractice() {
+  let correct = 0, wrong = 0, total = 0;
+  let errorItems = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const q = QUESTION_BANK[i];
+    const s = q.score;
+    total += s;
+    if (practiceAnswers[i] !== null) {
+      const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      if (practiceAnswers[i] === ansIdx) {
+        correct += s;
+      } else {
+        wrong += s;
+        errorItems.push({ id: q.id, your: q.options[practiceAnswers[i]], correct: q.answer });
+      }
+    } else {
+      wrong += s;
+      errorItems.push({ id: q.id, your: '未答', correct: q.answer });
+    }
+  }
+  const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
+  const rate = total > 0 ? Math.round(correct / total * 100) : 0;
+
+  document.getElementById('resultScore').textContent = `${correct}/${total}`;
+  document.getElementById('showPw').textContent = PASSWORD;
+  document.getElementById('resultCorrect').textContent = `${correct}分`;
+  document.getElementById('resultWrong').textContent = `${wrong}分`;
+  document.getElementById('resultRate').textContent = `${rate}%`;
+  document.getElementById('resultTime').textContent = `${elapsed}s`;
+
+  // Add error list
+  let errHtml = '';
+  if (errorItems.length > 0) {
+    errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
+    for (const e of errorItems) {
+      errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${e.correct}</span></div>`;
+    }
+    errHtml += '</details>';
+  }
+  document.querySelector('#resultOverlay .overlay-box').innerHTML = 
+    `<h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">${correct}/${total}</div>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value">${rate}%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value">${elapsed}s</div></div>
+    </div>${errHtml}
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResult()">返回</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>`;
+  
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+
+
+function closeResult() { document.getElementById('resultOverlay').classList.remove('show'); }
+function closeResultAndSwitchToQuiz() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswered = true;
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  quizUnlocked = true;
+  switchMode('quiz');
+}
+
+function closeResultAndReset() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  render();
+}
+
+/* ===== Quiz Actions ===== */
+function selectQuiz(idx, oi) {
+  quizAnswers[idx] = oi;
+  render();
+}
+
+function prevQuiz() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextQuiz() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goQuiz(i) { currentIdx = i; render(); }
+
+/* ===== Password ===== */
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    quizUnlocked = true;
+    document.getElementById('pwOverlay').classList.remove('show');
+    document.getElementById('pwError').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    render();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function closePw() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  switchMode('practice');
+}
+
+/* ===== Mode Switching ===== */
+function switchMode(newMode) {
+  mode = newMode;
+  currentIdx = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === newMode);
+  });
+  if (newMode === 'quiz' && !quizUnlocked) {
+    renderQuizLocked();
+  } else {
+    render();
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+});
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>

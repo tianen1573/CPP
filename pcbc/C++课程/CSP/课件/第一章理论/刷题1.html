@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算机基础知识</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --correct-bg: #dcfce7;
+    --wrong-bg: #fce4ec;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--card-bg);
+    padding: 6px 8px;
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .nav-tab {
+    flex: 1; min-width: 80px;
+    padding: 10px 12px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+  .main-content {
+    max-width: 720px; margin: 0 auto; padding: 0 16px 80px;
+    transition: opacity var(--transition);
+  }
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+    transition: var(--transition);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-badge {
+    font-size: 12px; padding: 2px 10px;
+    border-radius: 12px;
+    background: #e2e8f0; color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.7; margin-bottom: 16px;
+  }
+  .q-text code, .q-text pre {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .q-text code { padding: 2px 6px; }
+  .q-text pre {
+    padding: 12px 16px; margin: 8px 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    font-size: 14px; line-height: 1.5;
+    text-align: left; width: 100%;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .option .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #94a3b8; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .option.selected .radio { border-color: var(--accent); background: var(--accent); }
+  .option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+  .option.selected { border-color: var(--accent); background: #eef2ff; }
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .radio { border-color: var(--correct); background: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake 0.4s ease; }
+  .option.wrong .radio { border-color: var(--wrong); background: var(--wrong); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+  .option.no-feedback { animation: none !important; }
+
+  .explanation {
+    margin-top: 16px; padding: 14px 16px;
+    background: #f8fafc; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px; line-height: 1.7;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.show { display: block; }
+
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 20px;
+  }
+  .nav-buttons button {
+    padding: 10px 24px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    display: flex; gap: 4px; margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: var(--transition);
+    background: #f8fafc;
+  }
+  .progress-dot.answered { background: #eef2ff; border-color: var(--accent); color: var(--accent); }
+  .progress-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .progress-dot.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .progress-dot.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  .overlay-box h2 { font-size: 20px; margin-bottom: 12px; }
+  .overlay-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    font-size: 18px; letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .pw-input:focus { border-color: var(--accent); }
+  .pw-error { color: var(--wrong); font-size: 13px; margin-top: 8px; display: none; }
+  .score-big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .stat-item { padding: 12px; background: #f8fafc; border-radius: 8px; }
+  .stat-item .label { font-size: 12px; color: var(--text-secondary); }
+  .stat-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+  .error-list { margin-top: 16px; text-align: left; }
+  .error-list summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); padding: 8px 0; }
+  .error-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 17px; }
+    .nav-tabs { margin: 12px 8px 0; padding: 4px; }
+    .main-content { padding: 0 8px 60px; }
+    .card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .option { padding: 10px 12px; font-size: 13px; }
+    .overlay-box { padding: 20px; }
+    .score-big { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>📖 计算机基础知识</h1>
+  <p>计算机发展史 · 系统组成 · 信息表示 · 网络基础 · 信息安全</p>
+</div>
+
+<div class="nav-tabs" id="modeTabs">
+  <button class="nav-tab active" data-mode="practice">📝 练习</button>
+  <button class="nav-tab" data-mode="quiz">⚡ 刷题</button>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<!-- 刷题密码弹窗 -->
+<div class="overlay" id="pwOverlay">
+  <div class="overlay-box">
+    <h2>🔒 刷题模式</h2>
+    <p>请输入老师提供的 6 位密码</p>
+    <input type="password" class="pw-input" id="pwInput" maxlength="6" inputmode="numeric" autocomplete="off">
+    <div class="pw-error" id="pwError">❌ 密码错误，请重试</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closePw()">取消</button>
+      <button class="btn-primary" style="flex:1;" onclick="checkPw()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 练习结果弹窗 -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-box">
+    <h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">0/0</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong id="showPw"></strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" id="resultCorrect" style="color:var(--correct)">0</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" id="resultWrong" style="color:var(--wrong)">0</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value" id="resultRate">0%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value" id="resultTime">0s</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>
+  </div>
+</div>
+
+<script>
+// ========== 题库数据 ==========
+// ⚠️ 老师修改题目：直接编辑下面这个数组即可，不要改动下方代码
+// ⚠️ 刷题密码在下方 PASSWORD 变量
+const QUESTION_BANK = [
+  { "id":1, "type":"single", "question":"世界上第一台电子数字计算机 ENIAC 诞生于哪一年？", "options":["A. 1945","B. 1946","C. 1947","D. 1948"], "answer":"B", "score":4 },
+  { "id":2, "type":"single", "question":"冯·诺依曼体系结构的核心思想是？", "options":["A. 二进制运算","B. 并行计算","C. 集成电路","D. 存储程序"], "answer":"D", "score":4 },
+  { "id":3, "type":"single", "question":"计算机界的最高荣誉\"图灵奖\"由哪个机构颁发？", "options":["A. IEEE","B. ACM","C. CCF","D. ISO"], "answer":"B", "score":4 },
+  { "id":4, "type":"single", "question":"2026 年首次获得菲尔兹奖的中国籍数学家是？", "options":["A. 姚期智和邓煜","B. 王虹和姚期智","C. 王虹和邓煜","D. 只有王虹"], "answer":"C", "score":4 },
+  { "id":5, "type":"single", "question":"第一代计算机使用的逻辑元件是？", "options":["A. 电子管","B. 晶体管","C. 集成电路","D. 超大规模集成电路"], "answer":"A", "score":4 },
+  { "id":6, "type":"single", "question":"CPU（中央处理器）由哪两部分核心组成？", "options":["A. 运算器和控制器","B. 运算器和内存","C. 控制器和硬盘","D. 内存和 Cache"], "answer":"A", "score":4 },
+  { "id":7, "type":"single", "question":"以下关于 GPU 的描述，错误的是？", "options":["A. GPU 擅长大规模并行计算","B. GPU 是深度学习训练的核心硬件","C. NVIDIA 是主要的 GPU 厂商之一","D. GPU 可以完全替代 CPU 的所有功能"], "answer":"D", "score":4 },
+  { "id":8, "type":"single", "question":"TPU（张量处理器）是由哪家公司研发的？", "options":["A. NVIDIA","B. AMD","C. Google","D. Intel"], "answer":"C", "score":4 },
+  { "id":9, "type":"single", "question":"断电后数据会丢失的是？", "options":["A. ROM","B. 硬盘","C. U盘","D. RAM"], "answer":"D", "score":4 },
+  { "id":10, "type":"single", "question":"计算机中存储速度由快到慢的正确顺序是？", "options":["A. 寄存器 > Cache > 内存 > 硬盘","B. Cache > 寄存器 > 内存 > 硬盘","C. 内存 > 寄存器 > Cache > 硬盘","D. 硬盘 > 内存 > Cache > 寄存器"], "answer":"A", "score":4 },
+  { "id":11, "type":"single", "question":"十六进制数 <code>(2AF)₁₆</code> 转换为十进制的结果是？", "options":["A. 667","B. 687","C. 697","D. 677"], "answer":"B", "score":4 },
+  { "id":12, "type":"single", "question":"二进制数 <code>(110101011)₂</code> 转换为十六进制是？", "options":["A. 1AB","B. 1AD","C. 1B5","D. 1A7"], "answer":"A", "score":4 },
+  { "id":13, "type":"single", "question":"<code>-5</code> 的 8 位补码表示为？", "options":["A. <code>10000101</code>","B. <code>11111010</code>","C. <code>11111011</code>","D. <code>00000101</code>"], "answer":"C", "score":4 },
+  { "id":14, "type":"single", "question":"1 MB 等于多少字节？", "options":["A. 1000 B","B. 1024 B","C. 1000 × 1000 B","D. 1024 × 1024 B"], "answer":"D", "score":4 },
+  { "id":15, "type":"single", "question":"一幅 <code>1024×768</code> 分辨率、24 位色的图像，其未压缩数据量约为？", "options":["A. 1.5 MB","B. 2.25 MB","C. 3 MB","D. 768 KB"], "answer":"B", "score":4 },
+  { "id":16, "type":"single", "question":"逻辑运算 <code>13 & 7</code> 的结果是？", "options":["A. 5","B. 7","C. 13","D. 15"], "answer":"A", "score":4 },
+  { "id":17, "type":"single", "question":"逻辑运算 <code>13 ^ 7</code> 的结果是？", "options":["A. 5","B. 10","C. 7","D. 15"], "answer":"B", "score":4 },
+  { "id":18, "type":"single", "question":"ASCII 码中大写字母 'A' 的值是？", "options":["A. 48","B. 65","C. 97","D. 32"], "answer":"B", "score":4 },
+  { "id":19, "type":"single", "question":"以下哪一个是编译型语言？", "options":["A. Python","B. JavaScript","C. C++","D. BASIC"], "answer":"C", "score":4 },
+  { "id":20, "type":"single", "question":"在 OSI 七层模型中，TCP 协议属于哪一层？", "options":["A. 应用层","B. 传输层","C. 网络层","D. 数据链路层"], "answer":"B", "score":4 },
+  { "id":21, "type":"single", "question":"IP 地址 <code>127.0.0.1</code> 被称为？", "options":["A. 私有地址","B. 广播地址","C. 回环地址","D. 公网地址"], "answer":"C", "score":4 },
+  { "id":22, "type":"single", "question":"顶级域名 <code>.edu</code> 代表什么类型的机构？", "options":["A. 商业组织","B. 政府部门","C. 教育机构","D. 军事机构"], "answer":"C", "score":4 },
+  { "id":23, "type":"single", "question":"以下哪项是计算机病毒的特征？", "options":["A. 病毒只能在 Windows 上运行","B. 病毒是硬件问题","C. 病毒只能通过 U 盘传播","D. 传染性和破坏性"], "answer":"D", "score":4 },
+  { "id":24, "type":"single", "question":"从 n 个不同元素中取出 m 个（不考虑顺序）的计算公式是？", "options":["A. <code>n!/(n-m)!</code>","B. <code>n!/m!</code>","C. <code>m!/(n-m)!</code>","D. <code>n!/(m!×(n-m)!)</code>"], "answer":"D", "score":4 },
+  { "id":25, "type":"single", "question":"以下关于\"自由软件\"的描述，错误的是？", "options":["A. 可自由使用","B. 可自由修改","C. 必须完全免费","D. 可自由分发"], "answer":"C", "score":4 }
+];
+
+// ========== 刷题密码（老师可改） ==========
+const PASSWORD = "837291";
+
+// ========== 解析数据 ==========
+const EXPLANATIONS = {
+  1: "ENIAC（埃尼阿克）于 1946 年诞生于美国宾夕法尼亚大学，是世界上第一台电子数字计算机。",
+  2: "冯·诺依曼提出了「存储程序」概念，即程序和数据以二进制形式存储在存储器中，奠定了现代计算机体系结构的基础。",
+  3: "图灵奖由 ACM（美国计算机学会）颁发，被称为计算机界的「诺贝尔奖」。IEEE 颁发的是冯·诺依曼奖。",
+  4: "2026 年王虹、邓煜首次获得菲尔兹奖（数学最高荣誉）。姚期智是图灵奖得主（2000 年），并非菲尔兹奖。",
+  5: "第一代计算机（1946-1958）使用电子管，第二代晶体管，第三代集成电路，第四代大规模集成电路。",
+  6: "CPU 由运算器（ALU）和控制器（CU）两大部分组成，此外包括寄存器组和 Cache。注意 CPU 不包含内存和硬盘。",
+  7: "GPU 擅长并行计算，是 AI 训练的主力，但 GPU 不能完全替代 CPU。CPU 负责调度控制，GPU 专攻并行计算。",
+  8: "TPU（Tensor Processing Unit）是 Google 于 2016 年推出的专用 AI 芯片，专为神经网络张量运算设计。",
+  9: "RAM 是随机存取存储器，断电后数据丢失。ROM、硬盘、U盘断电后数据不丢失。",
+  10: "存储速度：寄存器 > Cache > 内存 > 硬盘。越靠近 CPU 越快，容量越小，成本越高。",
+  11: "(2AF)₁₆ = 2×256 + 10×16 + 15 = 512 + 160 + 15 = 687。A=10，F=15。",
+  12: "二进制转十六进制四位分组：0001 1010 1011 = 1AB。从右向左分组。",
+  13: "-5 原码 10000101 → 反码 11111010 → 补码 11111011。正数三码合一。",
+  14: "1 MB = 1024 KB = 1024 × 1024 B = 2²⁰ B。注意计算机用 1024 进制。",
+  15: "1024×768×24 = 18,874,368 bit。÷8 = 2,359,296 Byte。÷1024÷1024 ≈ 2.25 MB。",
+  16: "13 = 1101₂，7 = 0111₂。13 & 7 = 1101 & 0111 = 0101 = 5。与运算：有0则0。",
+  17: "13 = 1101₂，7 = 0111₂。13 ^ 7 = 1101 ^ 0111 = 1010 = 10。异或：相同0不同1。",
+  18: "常见 ASCII：'A'=65，'a'=97，'0'=48。大小写差 32。",
+  19: "C++ 是编译型语言（一次性翻译为机器码执行）。Python、JavaScript、BASIC 是解释型。",
+  20: "TCP 在 OSI 传输层（第4层），提供面向连接的可靠传输。UDP 也在传输层，无连接。",
+  21: "127.0.0.1 是回环地址（Loopback），指向本机，用于本地网络测试。",
+  22: ".edu = education，教育机构。.com = 商业，.gov = 政府，.mil = 军事。",
+  23: "病毒特征：传染性、潜伏性、隐蔽性、破坏性、可触发性。病毒是软件，不是硬件。",
+  24: "组合数 C(n,m) = n! / (m! × (n-m)!) ，不考虑顺序。排列 P(n,m) = n!/(n-m)! 考虑顺序。",
+  25: "自由软件强调使用自由（可自由使用、修改、分发），而非价格免费。'Free' 指自由不是免费。"
+};
+function getExplanation(id) { return EXPLANATIONS[id] || ""; }
+
+// ========== State ==========
+const TOTAL = QUESTION_BANK.length;
+let mode = 'practice';
+let practiceAnswers = new Array(TOTAL).fill(null);
+let practiceStartTime = null;
+let quizAnswers = new Array(TOTAL).fill(null);
+let currentIdx = 0;
+let quizUnlocked = false;
+
+const TOTAL_SCORE = QUESTION_BANK.reduce((s, q) => s + q.score, 0);
+
+// ========== Rendering ==========
+function render() {
+  const c = document.getElementById('mainContent');
+  if (mode === 'practice') renderPractice();
+  else if (mode === 'quiz' && !quizUnlocked) renderQuizLocked();
+  else if (mode === 'quiz' && quizUnlocked) renderQuiz();
+}
+
+function renderPractice() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题（每题 4 分，总分 100 分）</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderQuizLocked() {
+  document.getElementById('pwOverlay').classList.add('show');
+  document.getElementById('mainContent').innerHTML = '<div class="tab-panel active" style="text-align:center;padding:40px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:12px;">🔒</p><p>刷题模式需密码验证</p><p style="font-size:13px;margin-top:4px;">请联系老师获取 6 位密码</p></div>';
+}
+
+function renderQuiz() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let html = '<div class="tab-panel active">';
+  html += renderProgressBar('quiz');
+  html += renderQuestionCard('quiz');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderProgressBar(m) {
+  let html = '<div class="progress-bar">';
+  for (let i = 0; i < TOTAL; i++) {
+    let cls = 'progress-dot';
+    let ans = m === 'practice' ? practiceAnswers[i] : quizAnswers[i];
+    if (i === currentIdx) cls += ' current';
+    else if (ans !== null) cls += ' answered';
+    html += `<div class="${cls}" onclick="${m === 'practice' ? `goPractice(${i})` : `goQuiz(${i})`}" style="cursor:pointer;">${i + 1}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(m) {
+  const q = QUESTION_BANK[currentIdx];
+  const isPractice = m === 'practice';
+  const isQuiz = m === 'quiz';
+  const state = isPractice ? practiceAnswers : quizAnswers;
+  const val = state[currentIdx];
+
+  const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const qText = q.question;
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <span class="q-number">${q.id}</span>
+      <span class="q-badge">选择题 · ${q.score}分</span>
+    </div>
+    <div class="q-text">${qText}</div>`;
+
+  html += '<div class="options">';
+  for (let oi = 0; oi < q.options.length; oi++) {
+    let cls = 'option';
+    if (isQuiz) {
+      if (val !== null) {
+        if (oi === ansIdx) cls += ' correct';
+        if (val === oi && oi !== ansIdx) cls += ' wrong';
+        if (val === oi) cls += ' selected';
+      }
+    } else if (isPractice && val !== null) {
+      if (val === oi) cls += ' selected disabled';
+    }
+    if (isPractice) cls += ' no-feedback';
+    const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+    html += `<button class="${cls}" onclick="${onclick}">
+      <span class="radio"></span><span>${q.options[oi]}</span>
+    </button>`;
+  }
+  html += '</div>';
+
+  // Show explanation in quiz mode
+  if (isQuiz && val !== null && getExplanation(q.id)) {
+    html += '<div class="explanation show"><strong>📖 解析：</strong>' + getExplanation(q.id) + '</div>';
+  }
+
+  // Nav buttons
+  html += '<div class="nav-buttons">';
+  if (isPractice) {
+    html += `<button class="btn-secondary" onclick="prevPractice()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextPractice()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  } else {
+    html += `<button class="btn-secondary" onclick="prevQuiz()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextQuiz()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  }
+  html += '</div>';
+
+  // Practice: submit button
+  if (isPractice) {
+    let answered = practiceAnswers.filter(a => a !== null).length;
+    html += `<div style="text-align:center;margin-top:16px;">
+      <button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">${answered === TOTAL ? '📥 交卷' : '📥 交卷（' + answered + '/' + TOTAL + '）'}</button>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ===== Practice Actions ===== */
+function selectPractice(idx, oi) {
+  practiceAnswers[idx] = oi;
+  if (!practiceStartTime) practiceStartTime = Date.now();
+  render();
+}
+
+function prevPractice() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextPractice() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goPractice(i) { currentIdx = i; render(); }
+
+function submitPractice() {
+  let correct = 0, wrong = 0;
+  let errorItems = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const q = QUESTION_BANK[i];
+    const s = q.score;
+    if (practiceAnswers[i] !== null) {
+      const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      if (practiceAnswers[i] === ansIdx) {
+        correct += s;
+      } else {
+        wrong += s;
+        errorItems.push({ id: q.id, your: q.options[practiceAnswers[i]], correct: q.answer });
+      }
+    } else {
+      wrong += s;
+      errorItems.push({ id: q.id, your: '未答', correct: q.answer });
+    }
+  }
+  const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
+  const rate = TOTAL_SCORE > 0 ? Math.round(correct / TOTAL_SCORE * 100) : 0;
+
+  // Build result overlay content
+  let errHtml = '';
+  if (errorItems.length > 0) {
+    errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
+    for (const e of errorItems) {
+      let correctOpt = '';
+      const q = QUESTION_BANK.find(qq => qq.id === e.id);
+      if (q) correctOpt = q.options.find(o => o.startsWith(q.answer + '.')) || q.answer;
+      errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${correctOpt}</span></div>`;
+    }
+    errHtml += '</details>';
+  }
+
+  document.querySelector('#resultOverlay .overlay-box').innerHTML = 
+    `<h2>📄 练习报告</h2>
+    <div class="score-big">${correct}/${TOTAL_SCORE}</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong>${PASSWORD}</strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value">${rate}%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value">${elapsed}s</div></div>
+    </div>${errHtml}
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>`;
+  
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+function closeResult() { document.getElementById('resultOverlay').classList.remove('show'); }
+
+function closeResultAndSwitchToQuiz() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  quizUnlocked = true;
+  switchMode('quiz');
+}
+
+function closeResultAndReset() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  render();
+}
+
+/* ===== Quiz Actions ===== */
+function selectQuiz(idx, oi) {
+  quizAnswers[idx] = oi;
+  render();
+}
+
+function prevQuiz() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextQuiz() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goQuiz(i) { currentIdx = i; render(); }
+
+/* ===== Password ===== */
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    quizUnlocked = true;
+    document.getElementById('pwOverlay').classList.remove('show');
+    document.getElementById('pwError').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    render();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function closePw() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  switchMode('practice');
+}
+
+/* ===== Mode Switching ===== */
+function switchMode(newMode) {
+  mode = newMode;
+  currentIdx = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === newMode);
+  });
+  if (newMode === 'quiz' && !quizUnlocked) {
+    renderQuizLocked();
+  } else {
+    render();
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+});
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>
