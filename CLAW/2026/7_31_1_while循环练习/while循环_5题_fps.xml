@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fps version="1.0" url="http://code.google.com/p/freeproblemset/">
+  <generator name="HUSTOJ" url="https://github.com/zhblue/hustoj"/>
+  <item>
+    <title>装糖果</title>
+    <time_limit unit="s">1</time_limit>
+    <memory_limit unit="MB">128</memory_limit>
+    <description><![CDATA[小明有一个能装 n 颗糖果的罐子。他往罐子里放糖果，第 1 次放 1 颗，第 2 次放 3 颗，第 3 次放 5 颗……每次都比上一次多放 2 颗。如果下一次放进去会超过罐子容量，就停止。问他一共放了几次、罐子里有多少颗糖、还剩多少空位？]]></description>
+    <input><![CDATA[一行一个整数 n（10 ≤ n ≤ 1000）]]></input>
+    <output><![CDATA[一行三个整数，依次为：放糖次数、罐中糖数、剩余空位。]]></output>
+    <sample_input><![CDATA[20
+]]></sample_input>
+    <sample_output><![CDATA[4 16 4
+]]></sample_output>
+    <test_input><![CDATA[20
+]]></test_input>
+    <test_output><![CDATA[4 16 4
+]]></test_output>
+    <test_input><![CDATA[10
+]]></test_input>
+    <test_output><![CDATA[3 9 1
+]]></test_output>
+    <test_input><![CDATA[25
+]]></test_input>
+    <test_output><![CDATA[5 25 0
+]]></test_output>
+    <test_input><![CDATA[26
+]]></test_input>
+    <test_output><![CDATA[5 25 1
+]]></test_output>
+    <test_input><![CDATA[12
+]]></test_input>
+    <test_output><![CDATA[3 9 3
+]]></test_output>
+    <test_input><![CDATA[1000
+]]></test_input>
+    <test_output><![CDATA[31 961 39
+]]></test_output>
+    <hint><![CDATA[n 的取值范围：10 ≤ n ≤ 1000]]></hint>
+    <source>while循环练习</source>
+  </item>
+  <item>
+    <title>跳绳挑战</title>
+    <time_limit unit="s">1</time_limit>
+    <memory_limit unit="MB">128</memory_limit>
+    <description><![CDATA[小明练习跳绳，第 1 天跳 1 个，第 2 天跳 2 个，第 3 天跳 4 个……每天跳的数量都是前一天的两倍。问第几天他单日跳的数量首次超过 n 个？]]></description>
+    <input><![CDATA[一行一个整数 n（10 ≤ n ≤ 10⁹）]]></input>
+    <output><![CDATA[一行一个整数，表示天数。]]></output>
+    <sample_input><![CDATA[10
+]]></sample_input>
+    <sample_output><![CDATA[5
+]]></sample_output>
+    <test_input><![CDATA[10
+]]></test_input>
+    <test_output><![CDATA[5
+]]></test_output>
+    <test_input><![CDATA[16
+]]></test_input>
+    <test_output><![CDATA[6
+]]></test_output>
+    <test_input><![CDATA[100
+]]></test_input>
+    <test_output><![CDATA[8
+]]></test_output>
+    <test_input><![CDATA[12
+]]></test_input>
+    <test_output><![CDATA[5
+]]></test_output>
+    <test_input><![CDATA[100000000
+]]></test_input>
+    <test_output><![CDATA[28
+]]></test_output>
+    <test_input><![CDATA[1000000000
+]]></test_input>
+    <test_output><![CDATA[31
+]]></test_output>
+    <hint><![CDATA[n 的取值范围：10 ≤ n ≤ 10⁹，注意用 int 可能溢出，思考是否需要更大的类型]]></hint>
+    <source>while循环练习</source>
+  </item>
+  <item>
+    <title>存钱罐</title>
+    <time_limit unit="s">1</time_limit>
+    <memory_limit unit="MB">128</memory_limit>
+    <description><![CDATA[小红的存钱罐是空的。第 1 天她存 1 元，第 2 天存 2 元，第 3 天存 4 元……每天存的钱都是前一天的两倍。问第几天结束时，存钱罐里的总钱数首次超过 n 元？]]></description>
+    <input><![CDATA[一行一个整数 n（10 ≤ n ≤ 10⁹）]]></input>
+    <output><![CDATA[一行一个整数，表示天数。]]></output>
+    <sample_input><![CDATA[10
+]]></sample_input>
+    <sample_output><![CDATA[4
+]]></sample_output>
+    <test_input><![CDATA[10
+]]></test_input>
+    <test_output><![CDATA[4
+]]></test_output>
+    <test_input><![CDATA[15
+]]></test_input>
+    <test_output><![CDATA[5
+]]></test_output>
+    <test_input><![CDATA[100
+]]></test_input>
+    <test_output><![CDATA[7
+]]></test_output>
+    <test_input><![CDATA[16
+]]></test_input>
+    <test_output><![CDATA[5
+]]></test_output>
+    <test_input><![CDATA[100000000
+]]></test_input>
+    <test_output><![CDATA[27
+]]></test_output>
+    <test_input><![CDATA[1000000000
+]]></test_input>
+    <test_output><![CDATA[30
+]]></test_output>
+    <hint><![CDATA[n 的取值范围：10 ≤ n ≤ 10⁹，注意用 int 可能溢出，思考是否需要更大的类型]]></hint>
+    <source>while循环练习</source>
+  </item>
+  <item>
+    <title>玩具车电池</title>
+    <time_limit unit="s">1</time_limit>
+    <memory_limit unit="MB">128</memory_limit>
+    <description><![CDATA[小明的遥控玩具车满电时电量是 n%（n ≥ 50）。每玩 1 小时，电量就变为原来的 90%（例如 100% → 90% → 81%）。当电量首次低于 50% 时，玩具车就跑不动了。问玩多少小时后，电量首次低于 50%？]]></description>
+    <input><![CDATA[一行一个整数 n（50 ≤ n ≤ 10000，n 为偶数）]]></input>
+    <output><![CDATA[一行一个整数，表示小时数。]]></output>
+    <sample_input><![CDATA[100
+]]></sample_input>
+    <sample_output><![CDATA[7
+]]></sample_output>
+    <test_input><![CDATA[100
+]]></test_input>
+    <test_output><![CDATA[7
+]]></test_output>
+    <test_input><![CDATA[1000
+]]></test_input>
+    <test_output><![CDATA[29
+]]></test_output>
+    <test_input><![CDATA[200
+]]></test_input>
+    <test_output><![CDATA[14
+]]></test_output>
+    <test_input><![CDATA[500
+]]></test_input>
+    <test_output><![CDATA[22
+]]></test_output>
+    <test_input><![CDATA[50
+]]></test_input>
+    <test_output><![CDATA[1
+]]></test_output>
+    <test_input><![CDATA[10000
+]]></test_input>
+    <test_output><![CDATA[51
+]]></test_output>
+    <hint><![CDATA[n 的取值范围：50 ≤ n ≤ 10000，电量需要用 double 存储]]></hint>
+    <source>while循环练习</source>
+  </item>
+  <item>
+    <title>操场跑步</title>
+    <time_limit unit="s">1</time_limit>
+    <memory_limit unit="MB">128</memory_limit>
+    <description><![CDATA[学校操场一圈 400 米。小刚第 1 天跑 1 圈，第 2 天跑 2 圈，第 3 天跑 3 圈……每天比前一天多跑 1 圈。问第几天结束时，他累计跑的圈数首次达到或超过 n 圈？]]></description>
+    <input><![CDATA[一行一个整数 n（1 ≤ n ≤ 1000）]]></input>
+    <output><![CDATA[一行一个整数，表示天数。]]></output>
+    <sample_input><![CDATA[10
+]]></sample_input>
+    <sample_output><![CDATA[4
+]]></sample_output>
+    <test_input><![CDATA[10
+]]></test_input>
+    <test_output><![CDATA[4
+]]></test_output>
+    <test_input><![CDATA[1
+]]></test_input>
+    <test_output><![CDATA[1
+]]></test_output>
+    <test_input><![CDATA[100
+]]></test_input>
+    <test_output><![CDATA[14
+]]></test_output>
+    <test_input><![CDATA[15
+]]></test_input>
+    <test_output><![CDATA[5
+]]></test_output>
+    <test_input><![CDATA[990
+]]></test_input>
+    <test_output><![CDATA[44
+]]></test_output>
+    <test_input><![CDATA[1000
+]]></test_input>
+    <test_output><![CDATA[45
+]]></test_output>
+    <hint><![CDATA[n 的取值范围：1 ≤ n ≤ 1000]]></hint>
+    <source>while循环练习</source>
+  </item>
+</fps>

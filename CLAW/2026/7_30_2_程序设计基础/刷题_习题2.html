@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2章 程序设计基础 · 习题2</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --correct-bg: #dcfce7;
+    --wrong-bg: #fce4ec;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--card-bg);
+    padding: 6px 8px;
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .nav-tab {
+    flex: 1; min-width: 80px;
+    padding: 10px 12px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+  .main-content {
+    max-width: 720px; margin: 0 auto; padding: 0 16px 80px;
+    transition: opacity var(--transition);
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+    transition: var(--transition);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-badge {
+    font-size: 12px; padding: 2px 10px;
+    border-radius: 12px;
+    background: #e2e8f0; color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.7; margin-bottom: 16px;
+  }
+  .q-text code, .q-text pre {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .q-text code { padding: 2px 6px; }
+  .q-text pre {
+    padding: 12px 16px; margin: 8px 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    font-size: 14px; line-height: 1.5;
+    text-align: left; width: 100%;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .option .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #94a3b8; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .option.selected .radio { border-color: var(--accent); background: var(--accent); }
+  .option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+  .option.selected { border-color: var(--accent); background: #eef2ff; }
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .radio { border-color: var(--correct); background: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake 0.4s ease; }
+  .option.wrong .radio { border-color: var(--wrong); background: var(--wrong); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+
+  .judge-options { display: flex; gap: 12px; }
+  .judge-btn {
+    flex: 1; padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px; font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+    background: transparent;
+  }
+  .judge-btn:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .judge-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .judge-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .judge-btn.selected { border-color: var(--accent); background: #eef2ff; }
+  .judge-btn.disabled { cursor: default; }
+  .judge-btn.no-feedback { animation: none !important; }
+  .option.no-feedback { animation: none !important; }
+
+  .explanation {
+    margin-top: 16px; padding: 14px 16px;
+    background: #f8fafc; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px; line-height: 1.7;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.show { display: block; }
+
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 20px;
+  }
+  .nav-buttons button {
+    padding: 10px 24px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    display: flex; gap: 4px; margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: var(--transition);
+    background: #f8fafc;
+  }
+  .progress-dot.answered { background: #eef2ff; border-color: var(--accent); color: var(--accent); }
+  .progress-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .progress-dot.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .progress-dot.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* Overlay - Password / Result */
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  .overlay-box h2 { font-size: 20px; margin-bottom: 12px; }
+  .overlay-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    font-size: 18px; letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .pw-input:focus { border-color: var(--accent); }
+  .pw-error { color: var(--wrong); font-size: 13px; margin-top: 8px; display: none; }
+  .score-big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .stat-item { padding: 12px; background: #f8fafc; border-radius: 8px; }
+  .stat-item .label { font-size: 12px; color: var(--text-secondary); }
+  .stat-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+  .error-list { margin-top: 16px; text-align: left; }
+  .error-list summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); padding: 8px 0; }
+  .error-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 17px; }
+    .nav-tabs { margin: 12px 8px 0; padding: 4px; }
+    .main-content { padding: 0 8px 60px; }
+    .card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .option { padding: 10px 12px; font-size: 13px; }
+    .overlay-box { padding: 20px; }
+    .score-big { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>第2章 程序设计基础 · 习题2</h1>
+  <p>选择 20 · 判断 10 ｜ 总分 100</p>
+</div>
+
+<div class="nav-tabs" id="modeTabs">
+  <button class="nav-tab active" data-mode="practice">📝 练习</button>
+  <button class="nav-tab" data-mode="quiz">⚡ 刷题</button>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<!-- 刷题密码弹窗 -->
+<div class="overlay" id="pwOverlay">
+  <div class="overlay-box">
+    <h2>🔒 刷题模式</h2>
+    <p>请输入老师提供的 6 位密码</p>
+    <input type="password" class="pw-input" id="pwInput" maxlength="6" inputmode="numeric" autocomplete="off">
+    <div class="pw-error" id="pwError">❌ 密码错误，请重试</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closePw()">取消</button>
+      <button class="btn-primary" style="flex:1;" onclick="checkPw()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 练习结果弹窗 -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-box">
+    <h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">0/0</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong id="showPw"></strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" id="resultCorrect" style="color:var(--correct)">0</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" id="resultWrong" style="color:var(--wrong)">0</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value" id="resultRate">0%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value" id="resultTime">0s</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResult()">返回练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>
+  </div>
+</div>
+
+<script>
+// ========== 题库数据 ==========
+// ⚠️ 老师修改题目：直接编辑下面这个数组即可，不要改动下方代码
+// ⚠️ 刷题密码在下方 PASSWORD 变量
+const QUESTION_BANK = [{"id": 1, "type": "single", "question": "以下哪一项<strong>不是</strong>算法的基本特征？", "options": ["A. 有穷性", "B. 确定性", "C. 可行性", "D. 高效性"], "answer": "D", "score": 4}, {"id": 2, "type": "single", "question": "下列时间复杂度由小到大排列正确的是？", "options": ["A. O(log n) &lt; O(n) &lt; O(n²) &lt; O(2ⁿ)", "B. O(n) &lt; O(log n) &lt; O(n²) &lt; O(2ⁿ)", "C. O(n²) &lt; O(n) &lt; O(log n) &lt; O(2ⁿ)", "D. O(2ⁿ) &lt; O(n²) &lt; O(n) &lt; O(log n)"], "answer": "A", "score": 4}, {"id": 3, "type": "single", "question": "下列代码的时间复杂度是？<pre><code>for (int i = 0; i &lt; n; i++)\n    for (int j = 0; j &lt; i; j++)\n        cnt++;</code></pre>", "options": ["A. O(n)", "B. O(n log n)", "C. O(n²)", "D. O(n³)"], "answer": "C", "score": 4}, {"id": 4, "type": "single", "question": "关于 <code>int</code> 类型，下列说法正确的是？", "options": ["A. 占 1 个字节", "B. 占 4 个字节，范围约为 −2³¹ ~ 2³¹−1", "C. 占 8 个字节", "D. 占 2 个字节"], "answer": "B", "score": 4}, {"id": 5, "type": "single", "question": "<code>for</code> 循环的执行顺序正确的是？", "options": ["A. 条件判断 → 初始化 → 循环体 → 迭代 → 条件判断……", "B. 初始化 → 循环体 → 条件判断 → 迭代 → 条件判断……", "C. 初始化 → 条件判断 → 迭代 → 循环体 → 条件判断……", "D. 初始化 → 条件判断 → 循环体 → 迭代 → 条件判断……"], "answer": "D", "score": 4}, {"id": 6, "type": "single", "question": "下列三个函数中，调用后<strong>能真正交换</strong>外部实参 a、b 值的是？<pre><code>void f1(int &amp;x, int &amp;y) { int t = x; x = y; y = t; }\nvoid f2(int x, int y)   { int t = x; x = y; y = t; }\nvoid f3(int *x, int *y) { int t = *x; *x = *y; *y = t; }</code></pre>", "options": ["A. f1 和 f3", "B. f1 和 f2", "C. f2 和 f3", "D. 三个都能"], "answer": "A", "score": 4}, {"id": 7, "type": "single", "question": "关于类的访问权限，下列说法正确的是？", "options": ["A. <code>private</code> 成员在类外部可以直接访问", "B. <code>protected</code> 成员在派生类中不可访问", "C. <code>public</code> 成员在类外部可以访问", "D. 类成员的默认访问权限是 <code>public</code>"], "answer": "C", "score": 4}, {"id": 8, "type": "single", "question": "平均时间复杂度为 O(n log n) 的排序算法是？", "options": ["A. 冒泡、选择、插入", "B. 快排、归并、堆排", "C. 计数、桶、基数", "D. 冒泡、快排、选择"], "answer": "B", "score": 4}, {"id": 9, "type": "single", "question": "下列排序算法中<strong>不稳定</strong>的是？", "options": ["A. 冒泡排序", "B. 插入排序", "C. 归并排序", "D. 堆排序"], "answer": "D", "score": 4}, {"id": 10, "type": "single", "question": "快速排序在最坏情况下的时间复杂度是？", "options": ["A. O(n²)", "B. O(n)", "C. O(n log n)", "D. O(2ⁿ)"], "answer": "A", "score": 4}, {"id": 11, "type": "single", "question": "下列算法中，每一步都选择当前看起来最优的方案，但不保证得到全局最优解的是？", "options": ["A. 枚举", "B. 递推", "C. 贪心", "D. 二分"], "answer": "C", "score": 4}, {"id": 12, "type": "single", "question": "在有序数组中查找一个元素，效率最高的算法是？", "options": ["A. 顺序查找，O(n)", "B. 二分查找，O(log n)", "C. 冒泡查找，O(n²)", "D. 枚举查找，O(n²)"], "answer": "B", "score": 4}, {"id": 13, "type": "single", "question": "对字符串 <code>&quot;hello&quot;</code>，<code>strlen(&quot;hello&quot;)</code> 和 <code>sizeof(&quot;hello&quot;)</code> 的值分别是？", "options": ["A. 5 和 5", "B. 6 和 6", "C. 6 和 5", "D. 5 和 6"], "answer": "D", "score": 4}, {"id": 14, "type": "single", "question": "关于 C++ 的 <code>string</code> 类型，下列说法<strong>错误</strong>的是？", "options": ["A. <code>sizeof(s)</code> 可以求出字符串 s 的长度", "B. <code>s.length()</code> 返回字符串的长度", "C. <code>s.find(t)</code> 找不到子串时返回 <code>npos</code>", "D. <code>s += t</code> 可以将字符串 t 拼接到 s 末尾"], "answer": "A", "score": 4}, {"id": 15, "type": "single", "question": "下列代码的输出是？<pre><code>string s = &quot;CSP&quot;;\ns += &quot;-J&quot;;\ncout &lt;&lt; s.length();</code></pre>", "options": ["A. 3", "B. 4", "C. 5", "D. 6"], "answer": "C", "score": 4}, {"id": 16, "type": "single", "question": "关于链表和数组，下列说法正确的是？", "options": ["A. 链表支持 O(1) 的随机访问", "B. 已知位置时，链表插入/删除节点的时间复杂度是 O(1)", "C. 数组在任意位置插入元素的时间复杂度是 O(1)", "D. 链表要求存储空间连续"], "answer": "B", "score": 4}, {"id": 17, "type": "single", "question": "在单向链表的节点 p 后面插入新节点 newNode，正确的操作顺序是？", "options": ["A. <code>p-&gt;next = newNode; newNode-&gt;next = p-&gt;next;</code>", "B. <code>newNode-&gt;next = p; p-&gt;next = newNode;</code>", "C. <code>p-&gt;next = newNode; newNode-&gt;next = p;</code>", "D. <code>newNode-&gt;next = p-&gt;next; p-&gt;next = newNode;</code>"], "answer": "D", "score": 4}, {"id": 18, "type": "single", "question": "依次执行 <code>push(1), push(2), pop(), push(3), pop()</code> 后，栈顶元素是？", "options": ["A. 1", "B. 2", "C. 3", "D. 空栈"], "answer": "A", "score": 4}, {"id": 19, "type": "single", "question": "关于队列的说法，正确的是？", "options": ["A. 队列是后进先出（LIFO）结构，常用于括号匹配", "B. 队列是后进先出（LIFO）结构，常用于表达式求值", "C. 队列是先进先出（FIFO）结构，常用于 BFS 层序遍历", "D. 队列是先进先出（FIFO）结构，常用于递归调用"], "answer": "C", "score": 4}, {"id": 20, "type": "single", "question": "关于 STL 容器，下列说法<strong>错误</strong>的是？", "options": ["A. <code>vector</code> 是动态数组", "B. <code>set</code> 中的元素允许重复", "C. <code>map</code> 存储键值对，按键自动排序", "D. <code>set</code> 中的元素会自动排序"], "answer": "B", "score": 4}, {"id": 21, "type": "judge", "question": "一个算法的输出可以是 0 个。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 22, "type": "judge", "question": "忽略常数后，时间复杂度 O(2n) 与 O(n) 等价。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 23, "type": "judge", "question": "递归算法的空间复杂度等于递归深度。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 24, "type": "judge", "question": "<code>strlen(&quot;hello&quot;)</code> 的结果是 6。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 25, "type": "judge", "question": "快速排序在最坏情况下的时间复杂度是 O(n²)。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 26, "type": "judge", "question": "贪心算法每一步都选当前最优，因此一定能得到全局最优解。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 27, "type": "judge", "question": "双向链表的每个节点包含两个指针域，分别指向前驱和后继。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 28, "type": "judge", "question": "队列是一种后进先出（LIFO）的数据结构。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 29, "type": "judge", "question": "使用 <code>getline(cin, s)</code> 读入字符串时，遇到空格就会停止读取。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 30, "type": "judge", "question": "在链表中，已知位置插入或删除节点的时间复杂度是 O(1)。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}];
+
+// ========== 刷题密码（老师可改） ==========
+const PASSWORD = "730202";
+
+// ========== 解析数据 ==========
+const EXPLANATIONS = {"1": "算法五大特征：有穷、确定、可行、输入、输出，没有\"高效性\"。", "2": "复杂度排序：O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)。", "3": "内层循环执行 i 次，总次数 = 0+1+…+(n−1) ≈ n²/2，即 O(n²)。", "4": "int 占 4 字节，范围 −2³¹ ~ 2³¹−1。char 1 字节，long long 8 字节。", "5": "for 顺序：初始化 → 条件判断 → 循环体 → 迭代 → 条件判断……", "6": "f1 引用传递、f3 址传递都能修改实参；f2 值传递不能。", "7": "public 外部可访问；private 仅类内；protected 类内+派生类。类默认权限是 private。", "8": "平均 O(n log n) 的排序：快排、归并、堆排（\"快归堆\"）。", "9": "不稳定排序：选择、快排、堆排（\"选快堆\"）。堆排序不稳定。", "10": "快排最坏 O(n²)，发生在数据已有序/逆序时。平均 O(n log n)。", "11": "贪心：每步选当前最优，不保证全局最优。", "12": "有序数组查找 → 二分查找 O(log n)。", "13": "strlen(&quot;hello&quot;) = 5（不含 '\\0'）；sizeof(&quot;hello&quot;) = 6（含 '\\0'）。", "14": "sizeof(s) 是 string 对象占的内存，随平台实现而变（8/24/32/40），不是字符串长度！求长度用 s.length()。", "15": "&quot;CSP&quot; + &quot;-J&quot; = &quot;CSP-J&quot;，length() = 5。", "16": "链表已知位置插入/删除 O(1)；随机访问 O(n)；数组相反。链表不要求连续存储。", "17": "先让 newNode 指向原后继（newNode-&gt;next = p-&gt;next），再让 p 指向 newNode（先接后断）。", "18": "入1→入2→出2→入3→出3，栈中剩 [1]，栈顶是 1。", "19": "队列 FIFO；BFS 层序遍历用队列；括号匹配/表达式求值/递归用栈。", "20": "set 元素不允许重复（去重+有序）。", "21": "算法必须有至少 1 个输出；输入可以是 0 个。", "22": "计算复杂度时忽略常数，O(2n) = O(n)。", "23": "递归空间复杂度 = 递归深度（每层递归占栈空间）。", "24": "strlen(&quot;hello&quot;) = 5，不含 '\\0'。6 是 sizeof 的结果。", "25": "快排平均 O(n log n)，最坏（有序/逆序）O(n²)。", "26": "贪心只保证局部最优，不保证全局最优。", "27": "双向链表节点有 prev 和 next 两个指针域。", "28": "队列是先进先出（FIFO）；LIFO 是栈。", "29": "getline 读取一整行（含空格）；遇到空格停止的是 cin &gt;&gt; s。", "30": "已知位置时链表插入/删除只需改指针，O(1)。"};
+
+function getExplanation(id) { return EXPLANATIONS[id] || ""; }
+
+// ========== State ==========
+const TOTAL = QUESTION_BANK.length;
+let mode = 'practice';
+let practiceAnswers = new Array(TOTAL).fill(null);
+let practiceStartTime = null;
+let quizAnswers = new Array(TOTAL).fill(null);
+let currentIdx = 0;
+let quizUnlocked = false;
+
+const TOTAL_SCORE = QUESTION_BANK.reduce((s, q) => s + q.score, 0);
+
+// ========== Rendering ==========
+function render() {
+  const c = document.getElementById('mainContent');
+  if (mode === 'practice') renderPracticeSubmit();
+  else if (mode === 'quiz' && !quizUnlocked) renderQuizLocked();
+  else if (mode === 'quiz' && quizUnlocked) renderQuiz();
+}
+
+function renderPractice() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderPracticeSubmit() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '<div style="text-align:center;margin-top:16px;"><button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">📥 交卷</button></div>';
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderQuizLocked() {
+  document.getElementById('pwOverlay').classList.add('show');
+  document.getElementById('mainContent').innerHTML = '<div class="tab-panel active" style="text-align:center;padding:40px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:12px;">🔒</p><p>刷题模式需密码验证</p><p style="font-size:13px;margin-top:4px;">请联系老师获取 6 位密码</p></div>';
+}
+
+function renderQuiz() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let html = '<div class="tab-panel active">';
+  html += renderProgressBar('quiz');
+  html += renderQuestionCard('quiz');
+  html += `</div>`;
+  c.innerHTML = html;
+}
+
+function renderProgressBar(m) {
+  let html = '<div class="progress-bar">';
+  for (let i = 0; i < TOTAL; i++) {
+    let cls = 'progress-dot';
+    let ans = m === 'practice' ? practiceAnswers[i] : quizAnswers[i];
+    if (i === currentIdx) cls += ' current';
+    else if (ans !== null) cls += ' answered';
+    html += `<div class="${cls}" onclick="${m === 'practice' ? `goPractice(${i})` : `goQuiz(${i})`}" style="cursor:pointer;">${i + 1}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(m) {
+  const q = QUESTION_BANK[currentIdx];
+  const isPractice = m === 'practice';
+  const isQuiz = m === 'quiz';
+  const state = isPractice ? practiceAnswers : quizAnswers;
+  const val = state[currentIdx];
+
+  const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const qText = q.question;
+
+  // In practice mode, if already answered, show which we picked but no feedback
+  // In quiz mode, show feedback immediately
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <span class="q-number">${q.id}</span>
+      <span class="q-badge">${q.type === 'judge' ? '判断题' : '选择题'} · ${q.score}分</span>
+    </div>
+    <div class="q-text">${qText}</div>`;
+
+  if (q.type === 'single') {
+    html += '<div class="options">';
+    for (let oi = 0; oi < q.options.length; oi++) {
+      let cls = 'option';
+      if (isQuiz) {
+        if (val !== null) {
+          if (oi === ansIdx) cls += ' correct';
+          if (val === oi && oi !== ansIdx) cls += ' wrong';
+          if (val === oi) cls += ' selected';
+        }
+      } else if (isPractice && val !== null) {
+        if (val === oi) cls += ' selected disabled';
+      }
+      // Practice: no wrong/correct feedback
+      if (isPractice) cls += ' no-feedback';
+      const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+      html += `<button class="${cls}" onclick="${onclick}">
+        <span class="radio"></span><span>${q.options[oi]}</span>
+      </button>`;
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="judge-options">';
+    for (let oi = 0; oi < 2; oi++) {
+      let cls = 'judge-btn';
+      if (isQuiz) {
+        if (val !== null) {
+          if (oi === ansIdx) cls += ' correct';
+          if (val === oi && oi !== ansIdx) cls += ' wrong';
+          if (val === oi) cls += ' selected';
+        }
+      } else if (isPractice && val !== null) {
+        if (val === oi) cls += ' selected disabled';
+      }
+      // Practice: no wrong/correct feedback
+      if (isPractice) cls += ' no-feedback';
+      const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+      html += `<button class="${cls}" onclick="${onclick}">${q.options[oi]}</button>`;
+    }
+    html += '</div>';
+  }
+
+  // Show explanation: quiz mode or practice review mode
+  if (isQuiz && val !== null && getExplanation(q.id)) {
+    html += '<div class="explanation show"><strong>📖 解析：</strong>' + getExplanation(q.id) + '</div>';
+  }
+
+  // Nav buttons
+  html += '<div class="nav-buttons">';
+  if (isPractice) {
+    html += `<button class="btn-secondary" onclick="prevPractice()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextPractice()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  } else {
+    html += `<button class="btn-secondary" onclick="prevQuiz()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextQuiz()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  }
+  html += '</div>';
+
+  // Practice: submit button after last question
+  if (isPractice && currentIdx === TOTAL - 1) {
+    let answered = practiceAnswers.filter(a => a !== null).length;
+    html += `<div style="text-align:center;margin-top:16px;">
+      <button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">${answered === TOTAL ? '📥 交卷' : `📥 交卷（已答 ${answered}/${TOTAL}）`}</button>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ===== Practice Actions ===== */
+function selectPractice(idx, oi) {
+  practiceAnswers[idx] = oi;
+  if (!practiceStartTime) practiceStartTime = Date.now();
+  render();
+}
+
+function prevPractice() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextPractice() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goPractice(i) { currentIdx = i; render(); }
+
+function submitPractice() {
+  let correct = 0, wrong = 0, total = 0;
+  let errorItems = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const q = QUESTION_BANK[i];
+    const s = q.score;
+    total += s;
+    if (practiceAnswers[i] !== null) {
+      const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      if (practiceAnswers[i] === ansIdx) {
+        correct += s;
+      } else {
+        wrong += s;
+        errorItems.push({ id: q.id, your: q.options[practiceAnswers[i]], correct: q.answer });
+      }
+    } else {
+      wrong += s;
+      errorItems.push({ id: q.id, your: '未答', correct: q.answer });
+    }
+  }
+  const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
+  const rate = total > 0 ? Math.round(correct / total * 100) : 0;
+
+  document.getElementById('resultScore').textContent = `${correct}/${total}`;
+  document.getElementById('showPw').textContent = PASSWORD;
+  document.getElementById('resultCorrect').textContent = `${correct}分`;
+  document.getElementById('resultWrong').textContent = `${wrong}分`;
+  document.getElementById('resultRate').textContent = `${rate}%`;
+  document.getElementById('resultTime').textContent = `${elapsed}s`;
+
+  // Add error list
+  let errHtml = '';
+  if (errorItems.length > 0) {
+    errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
+    for (const e of errorItems) {
+      errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${e.correct}</span></div>`;
+    }
+    errHtml += '</details>';
+  }
+  document.querySelector('#resultOverlay .overlay-box').innerHTML = 
+    `<h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">${correct}/${total}</div>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value">${rate}%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value">${elapsed}s</div></div>
+    </div>${errHtml}
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResult()">返回</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResultAndReset()">重新练习</button>`;
+  
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+
+
+function closeResult() { document.getElementById('resultOverlay').classList.remove('show'); }
+function closeResultAndSwitchToQuiz() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswered = true;
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  quizUnlocked = true;
+  switchMode('quiz');
+}
+
+function closeResultAndReset() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  render();
+}
+
+/* ===== Quiz Actions ===== */
+function selectQuiz(idx, oi) {
+  quizAnswers[idx] = oi;
+  render();
+}
+
+function prevQuiz() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextQuiz() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goQuiz(i) { currentIdx = i; render(); }
+
+/* ===== Password ===== */
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    quizUnlocked = true;
+    document.getElementById('pwOverlay').classList.remove('show');
+    document.getElementById('pwError').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    render();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function closePw() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  switchMode('practice');
+}
+
+/* ===== Mode Switching ===== */
+function switchMode(newMode) {
+  mode = newMode;
+  currentIdx = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === newMode);
+  });
+  if (newMode === 'quiz' && !quizUnlocked) {
+    renderQuizLocked();
+  } else {
+    render();
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+});
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>

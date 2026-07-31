@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>单链表 · 插入 / 删除 / 修改 模拟</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --hl: #fef08a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .main-content { max-width: 960px; margin: 0 auto; padding: 16px 16px 60px; }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; margin-bottom: 12px; color: var(--text); }
+
+  /* ===== 链表画布 ===== */
+  #canvas {
+    min-height: 210px;
+    background: #fafbff;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 24px 16px;
+    overflow-x: auto;
+    position: relative;
+  }
+  #listWrap { display: flex; align-items: center; gap: 0; min-width: max-content; }
+  .head-tag {
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .node {
+    display: flex;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .node .data {
+    width: 56px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+    border-right: 1px solid var(--border);
+  }
+  .node .next {
+    width: 40px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    font-size: 11px;
+  }
+  .node.hl-target { border-color: var(--correct); box-shadow: 0 0 0 3px rgba(34,197,94,0.25); }
+  .node.hl-pred { border-color: var(--wrong); box-shadow: 0 0 0 3px rgba(239,68,68,0.25); }
+  .node.hl-new { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(139,92,246,0.35); }
+  .node.dim { opacity: 0.35; }
+  .node .data.dirty { background: var(--hl); animation: blink 0.6s ease 2; }
+  @keyframes blink { 50% { background: #fde047; } }
+
+  .arrow {
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .arrow.flash { color: var(--wrong); animation: pulse 0.5s ease 3; }
+  @keyframes pulse { 50% { transform: scale(1.5); } }
+
+  .null-tag {
+    font-size: 12px; color: var(--text-secondary);
+    border: 1.5px dashed var(--border); border-radius: 6px;
+    padding: 3px 8px; margin-left: 8px;
+    white-space: nowrap;
+  }
+  .empty-hint {
+    text-align: center; color: var(--text-secondary);
+    font-size: 14px; padding: 50px 0;
+  }
+
+  /* ===== 操作面板 ===== */
+  .panel-row {
+    display: flex; gap: 10px; align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--text-secondary); }
+  .field input {
+    padding: 9px 12px;
+    border: 2px solid var(--border); border-radius: 8px;
+    font-size: 14px; width: 90px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .field input.wide { width: 160px; }
+
+  .btn {
+    padding: 10px 18px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+  }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); }
+  .btn-primary:hover:not(:disabled) { background: #4f46e5; transform: translateY(-1px); }
+  .btn-danger { background: var(--wrong); }
+  .btn-danger:hover:not(:disabled) { background: #dc2626; transform: translateY(-1px); }
+  .btn-warn { background: #f59e0b; }
+  .btn-warn:hover:not(:disabled) { background: #d97706; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover:not(:disabled) { background: #cbd5e1; }
+  .btn-success { background: var(--correct); }
+  .btn-success:hover:not(:disabled) { background: #16a34a; }
+
+  /* ===== 步骤区 ===== */
+  #steps {
+    margin-top: 14px;
+    font-size: 13.5px;
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    min-height: 20px;
+    color: var(--text);
+  }
+  .step { margin: 4px 0; animation: fadeIn 0.25s ease; }
+  .step.doing { color: var(--accent); font-weight: 700; }
+  .step.done { color: var(--text-secondary); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; flex-wrap: wrap; gap: 8px;
+  }
+  #status { font-size: 13px; color: var(--text-secondary); }
+  #status.error { color: var(--wrong); font-weight: 600; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .dot-target { background: rgba(34,197,94,0.3); border: 1.5px solid var(--correct); }
+  .dot-pred { background: rgba(239,68,68,0.3); border: 1.5px solid var(--wrong); }
+  .dot-new { background: rgba(139,92,246,0.3); border: 1.5px solid var(--accent-2); }
+
+  @media (max-width: 600px) {
+    .main-content { padding: 8px 8px 40px; }
+    .card { padding: 14px; }
+    .panel-row { gap: 8px; }
+    .field input { width: 72px; }
+    .node .data { width: 46px; }
+    .node .next { width: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>🔗 单链表 · 插入 / 删除 / 修改 模拟</h1>
+  <p>观察指针变化，理解“先接后断” | 步骤逐步高亮演示</p>
+</div>
+
+<div class="main-content">
+
+  <!-- 链表画布 -->
+  <div class="card">
+    <div id="canvas">
+      <div id="listWrap"></div>
+    </div>
+    <div class="legend">
+      <span><span class="dot dot-new"></span> 新节点</span>
+      <span><span class="dot dot-pred"></span> 前驱 p</span>
+      <span><span class="dot dot-target"></span> 被操作节点</span>
+      <span>← 红色箭头 = 指针被改写</span>
+    </div>
+  </div>
+
+  <!-- 操作面板 -->
+  <div class="card">
+    <h2>⚙️ 操作演示</h2>
+    <div class="panel-row">
+      <div class="field">
+        <label>初始化链表（空格分隔）</label>
+        <input type="text" id="initInput" class="wide" value="5 3 8 1 9">
+      </div>
+      <button class="btn btn-secondary" onclick="initList()">🔄 重置</button>
+    </div>
+    <div style="height:14px"></div>
+
+    <div class="panel-row">
+      <div class="field">
+        <label>插入：位置 k（第 k 个节点后）</label>
+        <input type="number" id="insPos" value="2" min="0">
+      </div>
+      <div class="field">
+        <label>插入：值</label>
+        <input type="number" id="insVal" value="6">
+      </div>
+      <button class="btn btn-primary" onclick="demoInsert()">📥 插入演示</button>
+
+      <div style="width:16px"></div>
+
+      <div class="field">
+        <label>删除：位置 k（删第 k 个节点）</label>
+        <input type="number" id="delPos" value="3" min="1">
+      </div>
+      <button class="btn btn-danger" onclick="demoDelete()">🗑 删除演示</button>
+
+      <div style="width:16px"></div>
+
+      <div class="field">
+        <label>修改：位置 k</label>
+        <input type="number" id="modPos" value="2" min="1">
+      </div>
+      <div class="field">
+        <label>修改：新值</label>
+        <input type="number" id="modVal" value="99">
+      </div>
+      <button class="btn btn-warn" onclick="demoModify()">✏️ 修改演示</button>
+    </div>
+
+    <div class="status-bar">
+      <div id="status">就绪。点击上方按钮观看逐步演示。</div>
+      <div>
+        <button class="btn btn-secondary" onclick="resetAll()">清空高亮</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步骤说明 -->
+  <div class="card">
+    <h2>📋 操作步骤</h2>
+    <div id="steps"></div>
+  </div>
+
+</div>
+
+<script>
+// ========== 状态 ==========
+let list = [];            // 数据数组
+let busy = false;
+let timers = [];
+
+function $(id) { return document.getElementById(id); }
+
+// ========== 渲染 ==========
+function render(hl) {
+  hl = hl || {};
+  const wrap = $('listWrap');
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="empty-hint">链表为空（NULL）</div>';
+    return;
+  }
+  let html = '<div class="head-tag">head</div>';
+  for (let i = 0; i < list.length; i++) {
+    let cls = 'node';
+    if (hl.target === i) cls += ' hl-target';
+    if (hl.pred === i) cls += ' hl-pred';
+    if (hl.new === i) cls += ' hl-new';
+    if (hl.dim && hl.dim.includes(i)) cls += ' dim';
+    html += `<div class="node ${cls}">
+        <div class="data ${hl.dirty === i ? 'dirty' : ''}">${list[i]}</div>
+        <div class="next">next</div>
+      </div>`;
+    html += `<div class="arrow ${hl.flashArrow && hl.flashArrow === i ? 'flash' : ''}">→</div>`;
+  }
+  html += '<div class="null-tag">NULL</div>';
+  wrap.innerHTML = html;
+}
+
+// ========== 步骤输出 ==========
+function clearSteps() {
+  $('steps').innerHTML = '';
+  $('status').className = '';
+  $('status').textContent = '';
+}
+function addStep(text, cls) {
+  const d = document.createElement('div');
+  d.className = 'step ' + (cls || '');
+  d.textContent = text;
+  $('steps').appendChild(d);
+}
+function setStatus(text, isError) {
+  $('status').textContent = text;
+  $('status').className = isError ? 'error' : '';
+}
+
+function sleep(ms) {
+  return new Promise(r => timers.push(setTimeout(r, ms)));
+}
+
+// ========== 工具 ==========
+function clearHighlights() {
+  // 清掉所有高亮类（不动数据）
+  document.querySelectorAll('.node').forEach(n => {
+    n.classList.remove('hl-target','hl-pred','hl-new','dim');
+    const d = n.querySelector('.data');
+    if (d) d.classList.remove('dirty');
+  });
+  document.querySelectorAll('.arrow').forEach(a => a.classList.remove('flash'));
+}
+
+function resetAll() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  busy = false;
+  clearSteps();
+  clearHighlights();
+  setStatus('已清空高亮。');
+}
+
+function initList() {
+  if (busy) return;
+  resetAll();
+  const raw = $('initInput').value.trim();
+  list = raw ? raw.split(/\s+/).map(Number) : [];
+  render();
+  setStatus('已初始化：[' + list.join(', ') + ']');
+}
+
+// ========== 插入演示 ==========
+async function demoInsert() {
+  if (busy) return;
+  const pos = parseInt($('insPos').value, 10);
+  const val = parseInt($('insVal').value, 10);
+  if (isNaN(pos) || pos < 0 || pos > list.length) {
+    setStatus(`插入位置越界：k=${pos}，当前链表长度 ${list.length}（k 可取 0~${list.length}）`, true);
+    return;
+  }
+  busy = true; resetAll();
+  render();
+  await sleep(400);
+
+  addStep(`目标：在第 ${pos} 个节点后插入新节点 ${val}`, 'doing');
+  await sleep(600);
+
+  // 构造新节点（先渲染出来，灰色）
+  if (pos === 0) {
+    addStep('Step 1：p = head（前驱为头节点），newNode = ' + val);
+  } else {
+    addStep(`Step 1：找到前驱 p = 第 ${pos} 个节点（值 ${list[pos-1]}），newNode = ${val}`);
+    render({ pred: pos - 1 });
+    await sleep(900);
+  }
+
+  // Step 2: newNode->next = p->next（先接）
+  addStep('Step 2：newNode->next = p->next（新节点先指向原后继 —— 先接）', 'doing');
+  if (pos === 0) {
+    render({ new: 0, target: 0 });
+  } else {
+    render({ pred: pos - 1, target: pos, new: pos });
+  }
+  await sleep(1000);
+
+  // Step 3: p->next = newNode（后断）
+  addStep('Step 3：p->next = newNode（前驱再指向新节点 —— 后断）', 'doing');
+  list.splice(pos, 0, val);
+  render({ new: pos });
+  await sleep(1000);
+
+  addStep('✅ 插入完成，链表变为：[' + list.join(', ') + ']', 'done');
+  busy = false;
+}
+
+// ========== 删除演示 ==========
+async function demoDelete() {
+  if (busy) return;
+  const pos = parseInt($('delPos').value, 10);
+  if (isNaN(pos) || pos < 1 || pos > list.length) {
+    setStatus(`删除位置越界：k=${pos}，当前链表长度 ${list.length}（k 可取 1~${list.length}）`, true);
+    return;
+  }
+  busy = true; resetAll();
+  render();
+  await sleep(400);
+
+  addStep(`目标：删除第 ${pos} 个节点（值 ${list[pos-1]}）`, 'doing');
+  await sleep(600);
+
+  if (pos === 1) {
+    addStep('Step 1：删除的是头节点，直接 head = head->next');
+    render({ target: 0, flashArrow: 0 });
+    await sleep(1000);
+  } else {
+    addStep(`Step 1：找到前驱 p = 第 ${pos-1} 个节点（值 ${list[pos-2]}）`, 'doing');
+    render({ pred: pos - 2 });
+    await sleep(900);
+    addStep(`Step 2：令 q = p->next（即第 ${pos} 个节点）`);
+    render({ pred: pos - 2, target: pos - 1 });
+    await sleep(900);
+    addStep('Step 3：p->next = q->next（前驱跳过 q，直接指向 q 的后继）', 'doing');
+    render({ pred: pos - 2, target: pos - 1, flashArrow: pos - 2 });
+    await sleep(1000);
+    addStep('Step 4：delete q（释放 q 的内存）', 'doing');
+    render({ pred: pos - 2, target: pos - 1, dim: [pos - 1] });
+    await sleep(900);
+  }
+
+  list.splice(pos - 1, 1);
+  render();
+  await sleep(400);
+  addStep('✅ 删除完成，链表变为：[' + list.join(', ') + ']', 'done');
+  busy = false;
+}
+
+// ========== 修改演示 ==========
+async function demoModify() {
+  if (busy) return;
+  const pos = parseInt($('modPos').value, 10);
+  const val = parseInt($('modVal').value, 10);
+  if (isNaN(pos) || pos < 1 || pos > list.length) {
+    setStatus(`修改位置越界：k=${pos}，当前链表长度 ${list.length}（k 可取 1~${list.length}）`, true);
+    return;
+  }
+  busy = true; resetAll();
+  render();
+  await sleep(400);
+
+  addStep(`目标：把第 ${pos} 个节点的值从 ${list[pos-1]} 改为 ${val}`, 'doing');
+  render({ target: pos - 1 });
+  await sleep(1000);
+
+  addStep('Step 1：找到第 ' + pos + ' 个节点（遍历移动指针）', 'doing');
+  render({ target: pos - 1 });
+  await sleep(800);
+
+  addStep(`Step 2：p->data = ${val}（直接改写 data 域，指针结构不变）`, 'doing');
+  const oldVal = list[pos - 1];
+  list[pos - 1] = val;
+  render({ target: pos - 1, dirty: pos - 1 });
+  await sleep(1200);
+
+  addStep(`✅ 修改完成：${oldVal} → ${val}，链表变为：[' + list.join(', ') + ']`, 'done');
+  busy = false;
+}
+
+// ========== 初始化 ==========
+initList();
+</script>
+</body>
+</html>

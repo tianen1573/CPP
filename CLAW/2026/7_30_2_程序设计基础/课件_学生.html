@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>第2章 程序设计基础知识（学生版）</title>
+<style>
+  body { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+         max-width: 900px; margin: 0 auto; padding: 40px 50px;
+         line-height: 1.75; color: #222; font-size: 15px; }
+  h1 { border-bottom: 3px solid #4a6cf7; padding-bottom: 10px; color: #1a1a2e; }
+  h2 { border-left: 5px solid #4a6cf7; padding-left: 12px; margin-top: 36px; color: #1a1a2e; }
+  h3 { color: #333; margin-top: 24px; }
+  table { border-collapse: collapse; margin: 14px 0; width: 100%; }
+  th, td { border: 1px solid #bbb; padding: 6px 10px; font-size: 14px; }
+  th { background: #eef2ff; }
+  tr:nth-child(even) { background: #fafafa; }
+  code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px;
+         font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+  pre { background: #f6f8fa; padding: 14px; border-radius: 6px; overflow-x: auto;
+        border: 1px solid #ddd; }
+  pre code { background: none; padding: 0; }
+  blockquote { border-left: 4px solid #4a6cf7; margin: 12px 0; padding: 6px 14px;
+               background: #f8f9ff; color: #444; }
+  img { max-width: 100%; }
+  hr { border: none; border-top: 1px dashed #ccc; margin: 28px 0; }
+  @media print { body { padding: 10px; } h2 { page-break-after: avoid; } }
+</style>
+</head>
+<body>
+<h1>📖 第2章 程序设计基础知识</h1>
+<blockquote>
+<p>对应《信息学奥赛一本通·初赛篇》第二章
+适用范围：CSP-J / NOIP 普及组初赛</p>
+</blockquote>
+<hr />
+<h2>Part 1：程序基本常识</h2>
+<h3>1.1 算法的五大特征</h3>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>含义</th>
+<th>反例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>有穷性</strong></td>
+<td>必须在有限步内结束</td>
+<td>死循环</td>
+</tr>
+<tr>
+<td><strong>确定性</strong></td>
+<td>每步指令唯一确定、无歧义</td>
+<td>模棱两可的描述</td>
+</tr>
+<tr>
+<td><strong>可行性</strong></td>
+<td>每一步都能在有限时间内完成</td>
+<td>理论上可行但实际算不了</td>
+</tr>
+<tr>
+<td><strong>输入</strong></td>
+<td>有 0 个或多个输入</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>输出</strong></td>
+<td>有至少 1 个输出</td>
+<td>没有结果</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>初赛常考：给一段描述判断是否符合算法特征，尤其爱考「有穷性」和「确定性」。</p>
+</blockquote>
+<h3>1.2 时间复杂度</h3>
+<blockquote>
+<p>算法执行时间随数据规模 <code>n</code> 增长的变化趋势，用 <strong>大 O 表示法</strong> 描述。</p>
+</blockquote>
+<p><strong>常见复杂度排序（由快到慢）：</strong></p>
+<pre><code>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(n³) &lt; O(2ⁿ)
+</code></pre>
+<p><strong>计算规则：</strong></p>
+<ul>
+<li>忽略常数：<code>O(3n) = O(n)</code></li>
+<li>只取最高阶：<code>O(n² + n) = O(n²)</code></li>
+<li>乘法规则：嵌套循环 = 各层复杂度相乘</li>
+<li>加法规则：顺序执行的代码 = 取复杂度最大的部分</li>
+</ul>
+<p><strong>典型代码复杂度：</strong></p>
+<table>
+<thead>
+<tr>
+<th>代码模式</th>
+<th>复杂度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单层循环 <code>for(i=0;i&lt;n;i++)</code></td>
+<td>O(n)</td>
+<td>执行 n 次</td>
+</tr>
+<tr>
+<td>双层 <code>for i→n: for j→n</code></td>
+<td>O(n²)</td>
+<td>两层各 n 次</td>
+</tr>
+<tr>
+<td>双层 <code>for i→n: for j→i</code></td>
+<td>O(n²)</td>
+<td>约 n²/2（内层依赖外层）</td>
+</tr>
+<tr>
+<td>三层 <code>for i→n: for j→n: for k→n</code></td>
+<td>O(n³)</td>
+<td>三层各 n 次</td>
+</tr>
+<tr>
+<td>二分 <code>while(l&lt;r){mid=(l+r)/2}</code></td>
+<td>O(log n)</td>
+<td>每次规模减半</td>
+</tr>
+<tr>
+<td>递归 <code>fib(n)=fib(n-1)+fib(n-2)</code></td>
+<td>O(2ⁿ)</td>
+<td>指数爆炸</td>
+</tr>
+</tbody>
+</table>
+<h3>1.3 空间复杂度</h3>
+<ul>
+<li>算法运行过程中所需的额外存储空间</li>
+<li>常见：<code>O(1)</code>（原地操作）、<code>O(n)</code>（额外数组）、<code>O(n²)</code>（二维数组）</li>
+<li>递归的空间复杂度 = 递归深度（额外栈空间）</li>
+</ul>
+<h3>1.4 课堂练习</h3>
+<blockquote>
+<p>以下哪个时间复杂度描述是错误的？
+A. O(n + n²) = O(n²)　B. O(2n) = O(n)　C. O(n² + n log n) = O(n²)　D. O(2ⁿ + n¹⁰) = O(n¹⁰)</p>
+</blockquote>
+<p><strong>答案：</strong> D。指数增长（2ⁿ）快于任何多项式（n¹⁰），所以 O(2ⁿ + n¹⁰) 应取 O(2ⁿ)。</p>
+<hr />
+<h2>Part 2：C++ 语言基础</h2>
+<h3>2.1 程序基本构成</h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;   // 头文件
+using namespace std;  // 命名空间
+
+int main() {          // 主函数
+    int a = 10;
+    cout &lt;&lt; a;        // 输出
+    return 0;         // 返回值
+}
+</code></pre>
+<ul>
+<li><code>main</code> 函数是程序入口，<code>return 0</code> 表示正常退出</li>
+<li><code>cin</code> / <code>cout</code> 在 <code>&lt;iostream&gt;</code> 中定义</li>
+</ul>
+<h3>2.2 数据类型速览</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>字节</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td>4</td>
+<td>−2³¹ ~ 2³¹−1</td>
+</tr>
+<tr>
+<td><code>long long</code></td>
+<td>8</td>
+<td>−2⁶³ ~ 2⁶³−1</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>4</td>
+<td>约 ±3.4×10⁻³⁸ ~ ±3.4×10³⁸</td>
+</tr>
+<tr>
+<td><code>double</code></td>
+<td>8</td>
+<td>约 ±1.7×10⁻³⁰⁸ ~ ±1.7×10³⁰⁸</td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td>1</td>
+<td>−128 ~ 127 / 0 ~ 255</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>1</td>
+<td>true / false</td>
+</tr>
+</tbody>
+</table>
+<h3>2.3 程序三种基本结构</h3>
+<table>
+<thead>
+<tr>
+<th>结构</th>
+<th>C++ 语法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>顺序</strong></td>
+<td>代码从上往下依次执行</td>
+</tr>
+<tr>
+<td><strong>分支</strong></td>
+<td><code>if-else</code> / <code>switch-case</code></td>
+</tr>
+<tr>
+<td><strong>循环</strong></td>
+<td><code>for</code> / <code>while</code> / <code>do-while</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>初赛常考：<code>for</code> 循环的执行顺序（初始化→条件判断→循环体→迭代→条件判断……）</p>
+</blockquote>
+<h3>2.4 函数（三种传参方式）</h3>
+<pre><code class="language-cpp">// 值传递（形参改变不影响实参）
+void swap1(int a, int b) { int t = a; a = b; b = t; }
+
+// 址传递（传指针，通过指针直接修改内存内容）
+void swap3(int *pa, int *pb){
+    int t = *pa;
+    *pa = *pb;
+    *pb = t;
+}
+
+// 引用传递（形参改变影响实参）
+void swap2(int &amp;a, int &amp;b) { int t = a; a = b; b = t; }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th style="text-align:center">是否影响实参</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>值传递</td>
+<td style="text-align:center">❌ 不影响</td>
+<td>复制一份，函数内修改无效</td>
+</tr>
+<tr>
+<td>引用传递</td>
+<td style="text-align:center">✅ 影响</td>
+<td>直接操作原变量</td>
+</tr>
+<tr>
+<td>址传递</td>
+<td style="text-align:center">✅ 影响</td>
+<td>传指针，通过地址修改</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>全局变量与局部变量：注意作用域与生命周期</li>
+</ul>
+<h3>2.5 类（Class）</h3>
+<pre><code class="language-cpp">class Student {
+private:
+    int id;          // 私有成员，仅类内部可访问
+    string name;
+protected:
+    string school;   // 保护成员，类内部和派生类可访问
+public:
+    void setName(string n) { name = n; }   // 公有成员函数
+    void setSchool(string n) { school = n; }
+    string getName() { return name; }
+};
+
+class Stu : public Student {
+public:
+    void printId() {
+		cout &lt;&lt; id &lt;&lt; '\n'; // 报错，子类无法访问父类的私有属性
+    }
+    void printSchool() {
+		cout &lt;&lt; school &lt;&lt; '\n'; // 可以访问
+    }
+};
+
+Stu test;
+test.school = &quot;asd&quot;; // 访问不了，只能在类内部访问
+test.setSchool(&quot;asd&quot;); // 公开的，可以在类外面访问
+test.printSchool(); // 公开的，可以在类外面访问
+</code></pre>
+<p><strong>三种访问权限：</strong></p>
+<table>
+<thead>
+<tr>
+<th>权限</th>
+<th>关键字</th>
+<th style="text-align:center">类内部</th>
+<th style="text-align:center">派生类</th>
+<th style="text-align:center">外部</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>公有</strong></td>
+<td><code>public</code></td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+</tr>
+<tr>
+<td><strong>保护</strong></td>
+<td><code>protected</code></td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td><strong>私有</strong></td>
+<td><code>private</code></td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+</tbody>
+</table>
+<p><strong>继承方式对权限的影响：</strong></p>
+<table>
+<thead>
+<tr>
+<th>继承方式</th>
+<th style="text-align:center">父类 public</th>
+<th style="text-align:center">父类 protected</th>
+<th style="text-align:center">父类 private</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public</code> 继承</td>
+<td style="text-align:center">public</td>
+<td style="text-align:center">protected</td>
+<td style="text-align:center">不可见</td>
+</tr>
+<tr>
+<td><code>protected</code> 继承</td>
+<td style="text-align:center">protected</td>
+<td style="text-align:center">protected</td>
+<td style="text-align:center">不可见</td>
+</tr>
+<tr>
+<td><code>private</code> 继承</td>
+<td style="text-align:center">private</td>
+<td style="text-align:center">private</td>
+<td style="text-align:center">不可见</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>protected</code> 介于两者之间：自己能用，派生类能用，<strong>外部不能用</strong></li>
+<li><strong>成员函数</strong>定义在类内部的函数</li>
+<li>⚠️ <strong>类的默认访问权限是 <code>private</code>，结构体（struct）的默认访问权限是 <code>public</code></strong></li>
+<li>初赛常考：给一段类定义代码，判断哪些访问合法/非法</li>
+</ul>
+<h3>2.6 指针（Pointer）</h3>
+<pre><code class="language-cpp">int x = 10;
+int *p = &amp;x;        // p 指向 x 的地址
+cout &lt;&lt; *p;         // 解引用 → 10
+
+// 指针与数组
+int arr[5] = {1,2,3,4,5};
+int *q = arr;       // 数组名就是首地址
+cout &lt;&lt; *(q+2);     // → 3
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;x</code></td>
+<td>取地址</td>
+<td><code>int *p = &amp;x;</code></td>
+</tr>
+<tr>
+<td><code>*p</code></td>
+<td>解引用（取指针指向的值）</td>
+<td><code>cout &lt;&lt; *p;</code></td>
+</tr>
+<tr>
+<td><code>p + k</code></td>
+<td>指针偏移 k 个元素</td>
+<td><code>*(p+2)</code> 等价于 <code>arr[2]</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>指针常考陷阱：</strong></p>
+<ol>
+<li>未初始化的指针（野指针）</li>
+<li><code>NULL</code> / <code>nullptr</code> 的解引用会崩溃</li>
+<li>指针 + 整数是偏移，不是地址 + 字节数；<code>int *p</code> 时 <code>p+1</code> 跳过 4 字节</li>
+</ol>
+<h3>2.7 课堂练习</h3>
+<blockquote>
+<p>下列三个函数中，调用后能真正交换外部实参 a、b 值的是？</p>
+<pre><code class="language-cpp">void f1(int &amp;x, int &amp;y) { int t = x; x = y; y = t; }
+void f2(int x, int y)   { int t = x; x = y; y = t; }
+void f3(int *x, int *y) { int t = *x; *x = *y; *y = t; }
+</code></pre>
+</blockquote>
+<p><strong>答案：</strong> f1 和 f3。f2 是值传递，形参是实参的副本，函数内交换不影响外部实参。</p>
+<hr />
+<h2>Part 3：排序算法</h2>
+<h3>3.1 常用排序算法对比表</h3>
+<table>
+<thead>
+<tr>
+<th>排序算法</th>
+<th style="text-align:center">平均时间复杂度</th>
+<th style="text-align:center">最优</th>
+<th style="text-align:center">最坏</th>
+<th style="text-align:center">空间复杂度</th>
+<th style="text-align:center">稳定性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>冒泡排序</strong></td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(n)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(1)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+<tr>
+<td><strong>选择排序</strong></td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(1)</td>
+<td style="text-align:center">❌ 不稳定</td>
+</tr>
+<tr>
+<td><strong>插入排序</strong></td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(n)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(1)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+<tr>
+<td><strong>快速排序</strong></td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(log n)</td>
+<td style="text-align:center">❌ 不稳定</td>
+</tr>
+<tr>
+<td><strong>归并排序</strong></td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+<tr>
+<td><strong>堆排序</strong></td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(n log n)</td>
+<td style="text-align:center">O(1)</td>
+<td style="text-align:center">❌ 不稳定</td>
+</tr>
+<tr>
+<td><strong>计数排序</strong></td>
+<td style="text-align:center">O(n + k)</td>
+<td style="text-align:center">O(n + k)</td>
+<td style="text-align:center">O(n + k)</td>
+<td style="text-align:center">O(k)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+<tr>
+<td><strong>桶排序</strong></td>
+<td style="text-align:center">O(n + k)</td>
+<td style="text-align:center">O(n)</td>
+<td style="text-align:center">O(n²)</td>
+<td style="text-align:center">O(n)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+<tr>
+<td><strong>基数排序</strong></td>
+<td style="text-align:center">O(d(n+k))</td>
+<td style="text-align:center">O(d(n+k))</td>
+<td style="text-align:center">O(d(n+k))</td>
+<td style="text-align:center">O(n+k)</td>
+<td style="text-align:center">✅ 稳定</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 常考点速记</h3>
+<ol>
+<li>平均 O(n log n) 的排序：<strong>快排、归并、堆排</strong>（&quot;快归堆&quot;）</li>
+<li>稳定的排序：冒泡、插入、归并、计数、桶、基数（多记「归并稳定」）</li>
+<li>不稳定的排序：选择、快排、堆排（&quot;选快堆&quot;）</li>
+<li>快排最坏 O(n²) ← 有序/逆序时</li>
+<li>归并排序需要 O(n) 额外空间</li>
+</ol>
+<h3>3.3 课堂练习</h3>
+<blockquote>
+<p>下列排序算法中，不稳定的是（　）
+A. 冒泡排序　B. 插入排序　C. 归并排序　D. 堆排序</p>
+</blockquote>
+<p><strong>答案：</strong> D（堆排序）。不稳定排序：选择、快排、堆排（&quot;选快堆&quot;）。</p>
+<hr />
+<h2>Part 4：基础算法</h2>
+<h3>4.1 常见算法一览</h3>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>一句话理解</th>
+<th style="text-align:center">典型时间复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>枚举</strong></td>
+<td>把所有可能情况挨个试一遍</td>
+<td style="text-align:center">O(n) ~ O(nᵏ)</td>
+</tr>
+<tr>
+<td><strong>模拟</strong></td>
+<td>按题目规则一步一步执行</td>
+<td style="text-align:center">视规则而定</td>
+</tr>
+<tr>
+<td><strong>递推</strong></td>
+<td>从已知推未知，如斐波那契 <code>f(n)=f(n-1)+f(n-2)</code></td>
+<td style="text-align:center">O(n)</td>
+</tr>
+<tr>
+<td><strong>贪心</strong></td>
+<td>每步选当前最优，不保证全局最优</td>
+<td style="text-align:center">O(n log n)</td>
+</tr>
+<tr>
+<td><strong>分治</strong></td>
+<td>分成小问题分别解决再合并，如归并排序</td>
+<td style="text-align:center">O(n log n)</td>
+</tr>
+<tr>
+<td><strong>二分</strong></td>
+<td>有序序列中不断折半查找</td>
+<td style="text-align:center">O(log n)</td>
+</tr>
+<tr>
+<td><strong>双指针</strong></td>
+<td>两个指针从不同方向扫描数组</td>
+<td style="text-align:center">O(n)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>初赛常考：给一个题目描述，选择最适合的算法；或判断某个算法是否保证最优解（贪心常出判断题）。</p>
+</blockquote>
+<h3>4.2 课堂练习</h3>
+<blockquote>
+<p>下列算法中，每一步都选择当前看起来最优的方案，但不保证得到全局最优解的是（　）
+A. 枚举　B. 贪心　C. 递推　D. 二分</p>
+</blockquote>
+<p><strong>答案：</strong> B（贪心）。贪心只保证局部最优，不保证全局最优。</p>
+<hr />
+<h2>Part 5：字符数组与字符串</h2>
+<h3>5.1 C 风格字符串（<code>char[]</code>）</h3>
+<pre><code class="language-cpp">char s[100] = &quot;hello&quot;;
+cout &lt;&lt; s;          // 输出 hello
+cout &lt;&lt; strlen(s);  // 5（不包括 '\0'）
+cout &lt;&lt; sizeof(s);  // 100（数组大小）
+
+char s1[] = &quot;abc&quot;;
+cout &lt;&lt; sizeof (s1); // 4
+cout &lt;&lt; sizeof (&quot;abc&quot;); // 4
+</code></pre>
+<ul>
+<li>以 <code>'\0'</code>（空字符）结尾</li>
+<li>⚠️ <code>strlen</code> 不包含末尾的 <code>\0</code>，<code>sizeof</code> 包含整个数组大小</li>
+</ul>
+<h3>5.2 常用 C 字符串函数</h3>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>strlen(s)</code></td>
+<td>求长度（不含 <code>\0</code>）</td>
+<td><code>strlen(&quot;abc&quot;) = 3</code></td>
+</tr>
+<tr>
+<td><code>strcmp(a, b)</code></td>
+<td>比较字典序：&lt;0 / =0 / &gt;0</td>
+<td><code>strcmp(&quot;ab&quot;,&quot;ac&quot;) &lt; 0</code></td>
+</tr>
+<tr>
+<td><code>strcpy(dest, src)</code></td>
+<td>复制字符串</td>
+<td><code>strcpy(s, &quot;hi&quot;);</code></td>
+</tr>
+<tr>
+<td><code>strcat(dest, src)</code></td>
+<td>拼接</td>
+<td><code>strcat(s, &quot; world&quot;);</code></td>
+</tr>
+</tbody>
+</table>
+<h3>5.3 C++ <code>string</code> 类</h3>
+<pre><code class="language-cpp">#include &lt;string&gt;
+string s = &quot;hello&quot;;
+cout &lt;&lt; s.length();         // 5
+cout &lt;&lt; s[0];               // 'h'
+cout &lt;&lt; s.find(&quot;ll&quot;);       // 2（未找到返回 string::npos）
+cout &lt;&lt; s.substr(1, 3);     // &quot;ell&quot;（从 1 开始，取 3 个）
+s += &quot; world&quot;;              // 拼接
+
+cout &lt;&lt; sizeof (s) &lt;&lt; endl; // ⚠️ 结果不固定！随编译器/平台而变（8/24/32/40 都出现过）
+cout &lt;&lt; sizeof (&quot;hello&quot;) &lt;&lt; endl; // 6（字符数组大小，固定：5 个字符 + '\0'）
+</code></pre>
+<table>
+<thead>
+<tr>
+<th><code>string</code> 操作</th>
+<th>返回值 / 作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s.length()</code> / <code>s.size()</code></td>
+<td>字符串长度</td>
+</tr>
+<tr>
+<td><code>s[i]</code></td>
+<td>取第 i 个字符（0-based）</td>
+</tr>
+<tr>
+<td><code>s.find(t)</code></td>
+<td>查找子串 t 的位置，未找到返回 <code>npos</code></td>
+</tr>
+<tr>
+<td><code>s.substr(pos, len)</code></td>
+<td>取子串</td>
+</tr>
+<tr>
+<td><code>s + t</code> / <code>s += t</code></td>
+<td>字符串拼接</td>
+</tr>
+<tr>
+<td><code>s.compare(t)</code></td>
+<td>比较大小</td>
+</tr>
+<tr>
+<td><code>getline(cin, s)</code></td>
+<td>读入一整行（含空格）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>不要用 <code>sizeof</code> 求 string 变量的长度</strong>！<code>sizeof(s)</code> 是 string 对象本身占的内存（随平台实现而变），不是字符串长度。求长度用 <code>s.length()</code> / <code>s.size()</code>。而 <code>sizeof(&quot;hello&quot;)</code> 是字符数组大小（含 <code>'\0'</code>），这个才是固定的。</p>
+</blockquote>
+<h3>5.4 经典陷阱：cin 与 getline</h3>
+<pre><code class="language-cpp">string s;
+cin &gt;&gt; s;         // 遇到空格/换行停止
+getline(cin, s);  // 读取一整行（包括空格）
+
+输入：
+a
+bbb ccc
+</code></pre>
+<blockquote>
+<p>cin &gt;&gt; 和 getline 混用时，注意 cin 后的换行符会被 getline 读到——通常需要 <code>cin.ignore()</code>。</p>
+</blockquote>
+<h3>5.5 课堂练习</h3>
+<blockquote>
+<pre><code class="language-cpp">string s = &quot;CSP&quot;;
+s += &quot;-J&quot;;
+cout &lt;&lt; s.length();  // 输出？
+</code></pre>
+</blockquote>
+<p><strong>答案：</strong> 5。&quot;CSP&quot; 长度 3，拼接 &quot;-J&quot; 后为 &quot;CSP-J&quot;，共 5 个字符。</p>
+<hr />
+<h2>Part 6：链表</h2>
+<h3>6.1 顺序表 vs 链表</h3>
+<p><img src="%E5%9B%BE%E7%89%87/%E9%A1%BA%E5%BA%8F%E8%A1%A8vs%E9%93%BE%E8%A1%A8.svg" alt="" /></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>顺序表（数组）</th>
+<th>链表</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>存储</td>
+<td>连续内存</td>
+<td>节点分散，用指针连接</td>
+</tr>
+<tr>
+<td>随机访问</td>
+<td>O(1)——<code>arr[i]</code> 直接取</td>
+<td>O(n)——必须从头遍历</td>
+</tr>
+<tr>
+<td>插入/删除</td>
+<td>O(n)——要移动元素</td>
+<td>O(1)——改指针即可（已知位置）</td>
+</tr>
+<tr>
+<td>空间</td>
+<td>预先分配，可能浪费</td>
+<td>动态分配，按需申请</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>频繁查询、数据量稳定</td>
+<td>频繁插入删除、大小不确定</td>
+</tr>
+</tbody>
+</table>
+<h3>6.2 单向链表</h3>
+<p><strong>节点结构：</strong></p>
+<pre><code>┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│ data: 10 │ next:─┼─→  │ data: 20 │ next:─┼─→  │ data: 30 │next:null │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+   head                                              tail
+</code></pre>
+<pre><code class="language-cpp">struct Node {
+    int data;
+    Node* next;
+};
+</code></pre>
+<p><img src="%E5%9B%BE%E7%89%87/%E8%AF%BE%E4%BB%B6_%E8%80%81%E5%B8%88/image-20260731134135305.png" alt="image-20260731134135305" /></p>
+<p><strong>插入（在节点 p 后面插入 val）：</strong></p>
+<pre><code class="language-cpp">Node* newNode = new Node{val, p-&gt;next};  // 1. 新节点指向 p 的下一个
+p-&gt;next = newNode;                        // 2. p 指向新节点
+</code></pre>
+<p><strong>删除（删掉 p 后面的节点 q）：</strong></p>
+<pre><code class="language-cpp">p-&gt;next = q-&gt;next;  // 跳过 q
+delete q;           // 释放内存
+</code></pre>
+<h3>6.3 双向链表 &amp; 循环链表</h3>
+<p><strong>双向链表</strong>：每个节点有 <code>prev</code> 和 <code>next</code> 两个指针，可双向遍历。</p>
+<p><strong>循环链表</strong>：尾节点的 <code>next</code> 指向头节点，形成环。</p>
+<blockquote>
+<p>初赛常考：给一组插入/删除操作，问最终链表的节点顺序或某个位置的值。</p>
+</blockquote>
+<p><img src="%E5%9B%BE%E7%89%87/%E8%AF%BE%E4%BB%B6_%E8%80%81%E5%B8%88/image-20260731134158346.png" alt="image-20260731134158346" /></p>
+<p><img src="%E5%9B%BE%E7%89%87/%E8%AF%BE%E4%BB%B6_%E8%80%81%E5%B8%88/image-20260731134213486.png" alt="image-20260731134213486" /></p>
+<h3>6.4 课堂练习</h3>
+<blockquote>
+<p>在长度为 n 的链表中，已知指向某节点的指针 p，在 p 后面插入一个新节点的时间复杂度是（　）
+A. O(1)　B. O(log n)　C. O(n)　D. O(n²)</p>
+</blockquote>
+<p><strong>答案：</strong> A（O(1)）。已知位置时，链表插入只需改两个指针，不需要移动元素。</p>
+<hr />
+<h2>Part 7：栈和队列</h2>
+<h3>7.1 栈（Stack）—— 后进先出（LIFO）</h3>
+<blockquote>
+<p>就像一摞盘子——先放的压在最底下，后放的先拿走。</p>
+<p>纸盒模型：只能在一个口进出，先放进去的后拿出来</p>
+</blockquote>
+<p><strong>核心操作：</strong></p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+<th style="text-align:center">时间复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>push(x)</code></td>
+<td>将 x 压入栈顶</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>pop()</code></td>
+<td>弹出栈顶元素</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>top()</code></td>
+<td>获取栈顶元素（不弹出）</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>empty()</code></td>
+<td>判断栈是否为空</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+</tbody>
+</table>
+<pre><code>栈示意图（从底到顶）：
+bottom → [3] → [7] → [1] ← top
+push(9) 之后：
+bottom → [3] → [7] → [1] → [9] ← top
+pop() 之后：
+bottom → [3] → [7] → [1] ← top   （9 被弹出）
+</code></pre>
+<p><strong>数组模拟栈：</strong></p>
+<pre><code class="language-cpp">int stk[N], top = -1;
+stk[++top] = x;     // push
+x = stk[top--];     // pop
+</code></pre>
+<p><strong>常见应用：</strong></p>
+<ol>
+<li><strong>括号匹配</strong> — 左括号入栈，右括号弹出检查</li>
+<li><strong>表达式求值</strong> — 中缀转后缀，后缀表达式计算</li>
+<li><strong>函数调用栈</strong> — 递归调用的底层实现</li>
+</ol>
+<h3>7.2 队列（Queue）—— 先进先出（FIFO）</h3>
+<blockquote>
+<p>就像排队买东西——先来的人先买到，后来的人排后面。</p>
+<p>水管模型：一端进一端出，先进去的水，先流出来</p>
+</blockquote>
+<p><strong>核心操作：</strong></p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>含义</th>
+<th style="text-align:center">时间复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>push(x)</code></td>
+<td>将 x 入队（从队尾）</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>pop()</code></td>
+<td>弹出队头元素</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>front()</code></td>
+<td>获取队头元素</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>back()</code></td>
+<td>获取队尾元素</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+<tr>
+<td><code>empty()</code></td>
+<td>判断队列是否为空</td>
+<td style="text-align:center">O(1)</td>
+</tr>
+</tbody>
+</table>
+<pre><code>队列示意图：
+front → [3] → [7] → [1] ← back
+pop() 之后：
+front → [7] → [1] ← back   （3 被弹出）
+push(9) 之后：
+front → [7] → [1] → [9] ← back
+</code></pre>
+<p><strong>数组模拟循环队列：</strong></p>
+<pre><code class="language-cpp">int q[N], head = 0, tail = 0;
+q[tail++] = x;          // 入队
+x = q[head++];          // 出队
+</code></pre>
+<blockquote>
+<p>⚠️ 简单数组模拟会使空间无法复用，实际常用<strong>循环队列</strong>：<code>tail = (tail + 1) % N</code></p>
+</blockquote>
+<p><strong>常见应用：</strong></p>
+<ol>
+<li><strong>BFS 广度优先搜索</strong> — 逐层遍历</li>
+<li><strong>树的层序遍历</strong></li>
+<li><strong>缓冲区 / 消息队列</strong></li>
+</ol>
+<h3>7.3 栈 vs 队列</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>栈</th>
+<th>队列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原则</td>
+<td>后进先出（LIFO）</td>
+<td>先进先出（FIFO）</td>
+</tr>
+<tr>
+<td>比喻</td>
+<td>一摞盘子、盒子</td>
+<td>排队、水管</td>
+</tr>
+<tr>
+<td>操作端</td>
+<td>仅栈顶</td>
+<td>队头出、队尾入</td>
+</tr>
+<tr>
+<td>典型应用</td>
+<td>括号匹配、递归</td>
+<td>BFS、打印队列</td>
+</tr>
+</tbody>
+</table>
+<h3>7.4 课堂练习</h3>
+<blockquote>
+<p>依次执行：push(1), push(2), pop(), push(3), pop()，最后栈中剩余的元素是（　）
+A. 1　B. 2　C. 3　D. 空栈</p>
+</blockquote>
+<p><strong>答案：</strong> A（1）。过程：入1 → 入2 → 出2 → 入3 → 出3，栈中只剩 1。</p>
+<hr />
+<h2>Part 8：STL 容器</h2>
+<h3>8.1 常见容器</h3>
+<table>
+<thead>
+<tr>
+<th>容器</th>
+<th>特点</th>
+<th>常用操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vector</code></td>
+<td>动态数组，支持随机访问</td>
+<td><code>push_back</code> / <code>size</code> / <code>[i]</code></td>
+</tr>
+<tr>
+<td><code>map</code></td>
+<td>键值对，自动按键排序</td>
+<td><code>[key]</code> / <code>count</code> / <code>find</code></td>
+</tr>
+<tr>
+<td><code>set</code></td>
+<td>集合，元素不重复且有序</td>
+<td><code>insert</code> / <code>count</code> / <code>erase</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>了解语法即可，后续章节会深入使用。</p>
+</blockquote>
+<hr />
+<h2>练习</h2>
+<h3>练习 1</h3>
+<blockquote>
+<p>下列哪项<strong>不是</strong>算法的基本特征？
+A. 有穷性　B. 确定性　C. 美观性　D. 可行性</p>
+</blockquote>
+<p><strong>答案：</strong> C（美观性）。算法五特征：有穷、确定、可行、输入、输出。</p>
+<h3>练习 2</h3>
+<blockquote>
+<p>对长度为 n 的数组进行冒泡排序，平均时间复杂度为（　）
+A. O(n)　B. O(n log n)　C. O(n²)　D. O(2ⁿ)</p>
+</blockquote>
+<p><strong>答案：</strong> C（O(n²)）。冒泡排序平均和最坏都是 O(n²)。</p>
+<h3>练习 3</h3>
+<blockquote>
+<p>数组 <code>char s[] = &quot;abc&quot;</code>，<code>sizeof(s)</code> 的值是（　）
+A. 3　B. 4　C. 5　D. 不确定</p>
+</blockquote>
+<p><strong>答案：</strong> B（4）。字符数组含末尾 <code>'\0'</code>：&quot;abc&quot; + '\0' 共 4 个字节。</p>
+<h3>练习 4</h3>
+<blockquote>
+<p>在栈中依次 push(1)、push(2)、push(3)，再连续 pop 两次，栈顶元素是（　）
+A. 1　B. 2　C. 3　D. 空栈</p>
+</blockquote>
+<p><strong>答案：</strong> A（1）。后进先出：先出 3、再出 2，栈中剩 1。</p>
+<hr />
+<h2>小结</h2>
+<table>
+<thead>
+<tr>
+<th>知识点</th>
+<th>核心速记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>算法五特征</td>
+<td>有穷、确定、可行、输入、输出</td>
+</tr>
+<tr>
+<td>复杂度排序</td>
+<td>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)</td>
+</tr>
+<tr>
+<td>稳定排序</td>
+<td>冒泡、插入、归并、计数、桶、基数</td>
+</tr>
+<tr>
+<td>不稳定排序</td>
+<td>选择、快排、堆排（选快堆）</td>
+</tr>
+<tr>
+<td>O(n log n) 排序</td>
+<td>快排、归并、堆排（快归堆）</td>
+</tr>
+<tr>
+<td>传参方式</td>
+<td>值传递不影响实参；引用/址传递影响</td>
+</tr>
+<tr>
+<td>类访问权限</td>
+<td>public 全开放；protected 到派生类；private 仅类内</td>
+</tr>
+<tr>
+<td>类默认权限</td>
+<td><strong>class 默认 private，struct 默认 public</strong></td>
+</tr>
+<tr>
+<td>链表 vs 数组</td>
+<td>链表插入删除 O(1)、随机访问 O(n)；数组相反</td>
+</tr>
+<tr>
+<td>栈</td>
+<td>后进先出 LIFO，仅栈顶操作</td>
+</tr>
+<tr>
+<td>队列</td>
+<td>先进先出 FIFO，队头出、队尾入</td>
+</tr>
+<tr>
+<td>strlen vs sizeof</td>
+<td>strlen 不含 <code>'\0'</code>；sizeof 含整个数组</td>
+</tr>
+<tr>
+<td>string 长度</td>
+<td>用 <code>length()</code>，别用 <code>sizeof</code>（结果不固定）</td>
+</tr>
+</tbody>
+</table>
+<h3>⚠️ 注意</h3>
+<ul>
+<li>判断算法特征时，优先检查「有穷性」和「确定性」</li>
+<li>快排最坏情况 O(n²)，发生在数据已有序/逆序时</li>
+<li>贪心不保证全局最优</li>
+<li><code>cin &gt;&gt;</code> 与 <code>getline</code> 混用时记得 <code>cin.ignore()</code></li>
+<li>指针 <code>p+1</code> 是跳过整个元素（int 跳 4 字节），不是 +1 字节</li>
+<li>子类不能访问父类 <code>private</code> 成员</li>
+</ul>
+
+</body>
+</html>
