@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="480" viewBox="0 0 760 480" font-family="'Microsoft YaHei','PingFang SC',sans-serif">
+<defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+<rect width="760" height="480" fill="#f8fafc" rx="12"/>
+<text x="30" y="48" font-size="22" font-weight="bold" fill="#1e293b">IPv4 vs IPv6 对比</text>
+<rect x="40" y="75" width="330" height="330" rx="14" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+<rect x="40" y="75" width="330" height="52" rx="14" fill="#6366f1"/>
+<text x="205" y="107" text-anchor="middle" font-size="19" font-weight="bold" fill="#fff">IPv4</text>
+<text x="60" y="145" font-size="14" fill="#64748b">地址长度</text>
+<text x="355" y="145" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">32 位</text>
+<text x="60" y="187" font-size="14" fill="#64748b">表示方式</text>
+<text x="355" y="187" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">4 段十进制</text>
+<text x="60" y="229" font-size="14" fill="#64748b">分隔符</text>
+<text x="355" y="229" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">点 .</text>
+<text x="60" y="271" font-size="14" fill="#64748b">每段位数</text>
+<text x="355" y="271" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">8 位（0~255）</text>
+<text x="60" y="313" font-size="14" fill="#64748b">地址数量</text>
+<text x="355" y="313" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">约 43 亿</text>
+<text x="60" y="355" font-size="14" fill="#64748b">示例</text>
+<text x="355" y="355" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">192.168.1.1</text>
+<rect x="390" y="75" width="330" height="330" rx="14" fill="#fff" stroke="#8b5cf6" stroke-width="2"/>
+<rect x="390" y="75" width="330" height="52" rx="14" fill="#8b5cf6"/>
+<text x="555" y="107" text-anchor="middle" font-size="19" font-weight="bold" fill="#fff">IPv6</text>
+<text x="410" y="145" font-size="14" fill="#64748b">地址长度</text>
+<text x="705" y="145" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">128 位</text>
+<text x="410" y="187" font-size="14" fill="#64748b">表示方式</text>
+<text x="705" y="187" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">8 段十六进制</text>
+<text x="410" y="229" font-size="14" fill="#64748b">分隔符</text>
+<text x="705" y="229" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">冒号 :</text>
+<text x="410" y="271" font-size="14" fill="#64748b">每段位数</text>
+<text x="705" y="271" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">16 位（0000~FFFF）</text>
+<text x="410" y="313" font-size="14" fill="#64748b">地址数量</text>
+<text x="705" y="313" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">约 3.4×10³⁸</text>
+<text x="410" y="355" font-size="14" fill="#64748b">示例</text>
+<text x="705" y="355" text-anchor="end" font-size="15" font-weight="bold" fill="#1e293b">2001:0db8::7334</text>
+<text x="40" y="435" font-size="15" fill="#334155">⚠️ 陷阱：IPv6 是 128 位、8 段十六进制 —— “名字带 6”不是 6 段！</text>
+<text x="40" y="462" font-size="14" fill="#64748b">诞生原因：IPv4 地址枯竭（约 43 亿个不够分）→ IPv6 地址多到用不完</text>
+</svg>
