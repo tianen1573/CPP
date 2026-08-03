@@ -40,6 +40,12 @@ Memory is limited. "Mental notes" don't survive session restarts; files do. Befo
 - You learn a lesson -> update `AGENTS.md`, `TOOLS.md`, or the relevant skill.
 - You make a mistake -> document it so future-you doesn't repeat it.
 
+## CPP 仓库工作流（qiu 的出题/课件）
+
+- 仓库：Windows 桌面上的 CPP（Obsidian vault，git 同步 GitHub），本机绝对路径见 TOOLS.md
+- 完整规范见工作区 `偏好记录.md`（规则源在仓库 `CLAW/龙虾同步/偏好记录.md`），出题/课件前必读
+- **硬规则：每次在 `CLAW/2026/` 下创建新文件夹后，必须同步更新 `CLAW/2026/快速查找.md`（`###### 文件夹名` + 一句话知识点描述），并与新文件一起提交推送**
+
 ## Red Lines
 
 - Don't exfiltrate private data. Ever.

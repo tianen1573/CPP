@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌲 树 · 综合练习（第2套）· 练习</title>  <!-- 如无指定主题，改为：<title>M月DD日练习 · 主题</title> -->
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --correct-bg: #dcfce7;
+    --wrong-bg: #fce4ec;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--card-bg);
+    padding: 6px 8px;
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .nav-tab {
+    flex: 1; min-width: 80px;
+    padding: 10px 12px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+  .main-content {
+    max-width: 720px; margin: 0 auto; padding: 0 16px 80px;
+    transition: opacity var(--transition);
+  }
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+    transition: var(--transition);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-badge {
+    font-size: 12px; padding: 2px 10px;
+    border-radius: 12px;
+    background: #e2e8f0; color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.7; margin-bottom: 16px;
+  }
+  .q-text code, .q-text pre {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .q-text code { padding: 2px 6px; }
+  .q-text pre {
+    padding: 12px 16px; margin: 8px 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    font-size: 14px; line-height: 1.5;
+    text-align: left; width: 100%;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .option .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #94a3b8; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .option.selected .radio { border-color: var(--accent); background: var(--accent); }
+  .option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+  .option.selected { border-color: var(--accent); background: #eef2ff; }
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .radio { border-color: var(--correct); background: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake 0.4s ease; }
+  .option.wrong .radio { border-color: var(--wrong); background: var(--wrong); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+  .option.no-feedback { animation: none !important; }
+
+  .explanation {
+    margin-top: 16px; padding: 14px 16px;
+    background: #f8fafc; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px; line-height: 1.7;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.show { display: block; }
+
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 20px;
+  }
+  .nav-buttons button {
+    padding: 10px 24px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    display: flex; gap: 4px; margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: var(--transition);
+    background: #f8fafc;
+  }
+  .progress-dot.answered { background: #eef2ff; border-color: var(--accent); color: var(--accent); }
+  .progress-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .progress-dot.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .progress-dot.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+    position: relative;
+  }
+  .overlay-close {
+    position: absolute; top: 12px; right: 14px;
+    width: 32px; height: 32px;
+    border: none; background: #f1f3f6;
+    border-radius: 50%;
+    font-size: 18px; line-height: 1;
+    color: #888; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .overlay-close:hover { background: #e2e6ed; color: #333; }
+  .overlay-box h2 { font-size: 20px; margin-bottom: 12px; }
+  .overlay-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    font-size: 18px; letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .pw-input:focus { border-color: var(--accent); }
+  .pw-error { color: var(--wrong); font-size: 13px; margin-top: 8px; display: none; }
+  .score-big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .stat-item { padding: 12px; background: #f8fafc; border-radius: 8px; }
+  .stat-item .label { font-size: 12px; color: var(--text-secondary); }
+  .stat-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+  .error-list { margin-top: 16px; text-align: left; }
+  .error-list summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); padding: 8px 0; }
+  .error-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 17px; }
+    .nav-tabs { margin: 12px 8px 0; padding: 4px; }
+    .main-content { padding: 0 8px 60px; }
+    .card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .option { padding: 10px 12px; font-size: 13px; }
+    .overlay-box { padding: 20px; }
+    .score-big { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>🌲 树 · 综合练习（第2套）</h1>                   <!-- 如无指定主题，改为：📖 M月DD日练习 · 主题 -->
+  <p>树的概念 · 二叉树性质 · 满/完全二叉树 · 遍历与还原 · 树的形态</p>         <!-- 知识点概览，如：进制转换 · 位运算 · 网络基础 -->
+</div>
+
+<div class="nav-tabs" id="modeTabs">
+  <button class="nav-tab active" data-mode="practice">📝 练习</button>
+  <button class="nav-tab" data-mode="quiz">⚡ 刷题</button>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<!-- 刷题密码弹窗 -->
+<div class="overlay" id="pwOverlay">
+  <div class="overlay-box">
+    <h2>🔒 刷题模式</h2>
+    <p>请输入老师提供的 6 位密码</p>
+    <input type="password" class="pw-input" id="pwInput" maxlength="6" inputmode="numeric" autocomplete="off">
+    <div class="pw-error" id="pwError">❌ 密码错误，请重试</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closePw()">取消</button>
+      <button class="btn-primary" style="flex:1;" onclick="checkPw()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 练习结果弹窗 -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeResult()">✕</button>
+    <h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">0/0</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong id="showPw"></strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" id="resultCorrect" style="color:var(--correct)">0</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" id="resultWrong" style="color:var(--wrong)">0</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value" id="resultRate">0%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value" id="resultTime">0s</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndReset()">重新练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResult()">关闭窗口</button>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// ===== 使用说明：修改下面三个地方即可 =====
+// =====================================================
+
+// ===== ① 题目数据 =====
+// 格式：{ "id":连续编号, "type":"single"(单选), "question":题目, "options":选项列表, "answer":正确答案字母, "score":分值 }
+// 如需判断题："type":"judge", "options":["✓ 正确","✗ 错误"], "answer":"A"(正确)/"B"(错误)
+// 含程序代码时，用 <pre><code>...</code></pre> 包裹，注意 JS 字符串转义
+const QUESTION_BANK = [
+  {
+    "id": 1,
+    "type": "single",
+    "question": "某公司的组织结构图是一棵有 50 名员工的树形结构（董事长是根，每个员工至多一个直接上级）。该组织结构图中的\"上下级关系\"连线共有（ ）条。",
+    "options": [
+      "A. 50",
+      "B. 49",
+      "C. 51",
+      "D. 48"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 2,
+    "type": "single",
+    "question": "对一棵二叉树进行前序遍历得到 `ABDCEF`，中序遍历得到 `DBAECF`。这棵二叉树的后序遍历结果是（ ）。",
+    "options": [
+      "A. `D B E F C A`",
+      "B. `D B E A F C`",
+      "C. `D E B C F A`",
+      "D. `A B D C E F`"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 3,
+    "type": "single",
+    "question": "一棵树有 5 个度为 2 的节点、3 个度为 3 的节点、4 个度为 1 的节点，其余都是叶子节点。这棵树的叶子节点数为（ ）。",
+    "options": [
+      "A. 10",
+      "B. 11",
+      "C. 12",
+      "D. 13"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 4,
+    "type": "single",
+    "question": "用 3 个节点可以构成（ ）种不同形态的二叉树（左右子树区分，即交换左右孩子算不同形态）。",
+    "options": [
+      "A. 3",
+      "B. 5",
+      "C. 6",
+      "D. 4"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 5,
+    "type": "single",
+    "question": "一个深度为 7 的二叉树最多有（ ）个节点。",
+    "options": [
+      "A. 64",
+      "B. 127",
+      "C. 128",
+      "D. 63"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 6,
+    "type": "single",
+    "question": "小华用数组按层序存储一棵完全二叉树，编号从 1 开始。若总节点数 n = 15，则编号为 8 的节点（ ）。",
+    "options": [
+      "A. 是编号 4 的节点的右孩子",
+      "B. 是叶子节点",
+      "C. 有右孩子",
+      "D. 是根节点的左孩子"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 7,
+    "type": "single",
+    "question": "某二叉树共有 25 个节点，其中度为 1 的节点有 4 个，则该二叉树的叶子节点数为（ ）。",
+    "options": [
+      "A. 9",
+      "B. 10",
+      "C. 11",
+      "D. 12"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 8,
+    "type": "single",
+    "question": "某二叉树中，度为 2 的节点有 12 个，度为 1 的节点有 5 个，则该二叉树共有（ ）个节点。",
+    "options": [
+      "A. 30",
+      "B. 28",
+      "C. 29",
+      "D. 31"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 9,
+    "type": "single",
+    "question": "下列关于二叉树的说法，**错误**的是（ ）。",
+    "options": [
+      "A. 二叉树第 i 层（根为第 1 层）最多有 2^(i-1) 个节点",
+      "B. 二叉树是每个节点最多有两个孩子节点的有序树",
+      "C. 深度为 k 的二叉树最多有 2^k 个节点",
+      "D. 二叉树中叶子节点数 = 度为 2 的节点数 + 1"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 10,
+    "type": "single",
+    "question": "一个包含 100 个节点的完全二叉树，其叶子节点数为（ ）。",
+    "options": [
+      "A. 49",
+      "B. 51",
+      "C. 50",
+      "D. 48"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 11,
+    "type": "single",
+    "question": "已知一棵二叉树的后序遍历为 `DEBFCA`，中序遍历为 `DBEAFC`，则其前序遍历为（ ）。",
+    "options": [
+      "A. `A B D E F C`",
+      "B. `A B D E C F`",
+      "C. `A B C D E F`",
+      "D. `A D B E C F`"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 12,
+    "type": "single",
+    "question": "一棵二叉树共有 7 个节点，则它的深度（根深度为 1）最小为（ ）。",
+    "options": [
+      "A. 2",
+      "B. 4",
+      "C. 3",
+      "D. 5"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 13,
+    "type": "single",
+    "question": "一棵完全二叉树按层序编号（根为 1），则编号为 10 的节点位于第（ ）层。",
+    "options": [
+      "A. 3",
+      "B. 5",
+      "C. 6",
+      "D. 4"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 14,
+    "type": "single",
+    "question": "一棵深度为 5 的完全二叉树，其节点数最少为（ ）个。",
+    "options": [
+      "A. 16",
+      "B. 15",
+      "C. 17",
+      "D. 31"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 15,
+    "type": "single",
+    "question": "一棵二叉树有 8 个叶子节点，且所有内部节点的度都为 2（没有度为 1 的节点），则这棵二叉树共有（ ）个节点。",
+    "options": [
+      "A. 14",
+      "B. 16",
+      "C. 17",
+      "D. 15"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 16,
+    "type": "single",
+    "question": "已知前序遍历和中序遍历可以唯一确定一棵二叉树，但前序遍历和后序遍历通常不能。下列情况中，仅凭前序 + 后序**可以**唯一确定二叉树的是（ ）。",
+    "options": [
+      "A. 二叉树是一棵满二叉树",
+      "B. 二叉树的所有节点都只有左孩子",
+      "C. 二叉树是一棵完全二叉树",
+      "D. 二叉树的深度为 3"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 17,
+    "type": "single",
+    "question": "一个深度为 5 的满二叉树，其叶子节点数为（ ）。",
+    "options": [
+      "A. 31",
+      "B. 15",
+      "C. 16",
+      "D. 32"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 18,
+    "type": "single",
+    "question": "小华想通过遍历输出找到根节点。下列遍历方式中，**最后一个输出**的一定是根节点的是（ ）。",
+    "options": [
+      "A. 前序遍历",
+      "B. 后序遍历",
+      "C. 中序遍历",
+      "D. 层序遍历"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 19,
+    "type": "single",
+    "question": "对一棵完全二叉树按层序编号（根为 1），已知某节点的编号为 i（i > 1），则其父节点的编号为（ ）。",
+    "options": [
+      "A. 2i",
+      "B. 2i + 1",
+      "C. i - 1",
+      "D. ⌊i / 2⌋"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 20,
+    "type": "single",
+    "question": "已知一棵二叉树的中序遍历为 `ABCDEFG`，后序遍历为 `BDCAFGE`，则其前序遍历为（ ）。",
+    "options": [
+      "A. `E A C B D G F`",
+      "B. `E A C B D F G`",
+      "C. `E A B C D G F`",
+      "D. `A C B D E G F`"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 21,
+    "type": "single",
+    "question": "下列关于树和二叉树的说法，正确的是（ ）。",
+    "options": [
+      "A. 树中任意两个节点之间有且仅有一条路径",
+      "B. 一棵有 n 个节点的树有 n 条边",
+      "C. 树的度是指叶子节点的个数",
+      "D. 二叉树就是度为 2 的树"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 22,
+    "type": "single",
+    "question": "一棵满二叉树共有 63 个节点，则其叶子节点数为（ ）。",
+    "options": [
+      "A. 31",
+      "B. 30",
+      "C. 33",
+      "D. 32"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 23,
+    "type": "single",
+    "question": "用数组存储一棵完全二叉树（编号从 1 开始），若节点总数 n = 15，则编号为 6 的节点的右孩子编号是（ ）。",
+    "options": [
+      "A. 12",
+      "B. 11",
+      "C. 13",
+      "D. 不存在"
+    ],
+    "answer": "C",
+    "score": 2
+  },
+  {
+    "id": 24,
+    "type": "single",
+    "question": "一棵二叉树有 5 个叶子节点，且这棵树中没有度为 1 的节点，则它共有（ ）个节点。",
+    "options": [
+      "A. 8",
+      "B. 9",
+      "C. 10",
+      "D. 11"
+    ],
+    "answer": "B",
+    "score": 2
+  },
+  {
+    "id": 25,
+    "type": "single",
+    "question": "在一棵完全二叉树中，若节点总数为 100，则这棵树的深度为（ ）。",
+    "options": [
+      "A. 6",
+      "B. 8",
+      "C. 9",
+      "D. 7"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 26,
+    "type": "single",
+    "question": "一棵二叉树的层序遍历为 `ABCDEF`，前序遍历为 `ABDECF`，则该二叉树的后序遍历为（ ）。",
+    "options": [
+      "A. `D E B F C A`",
+      "B. `D E B C F A`",
+      "C. `D E B F A C`",
+      "D. `D E B C A F`"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 27,
+    "type": "single",
+    "question": "文件系统、网页的 DOM 结构、公司组织架构等都可以抽象为树结构。下列数据结构中，**不是**树结构的是（ ）。",
+    "options": [
+      "A. 文件系统的目录结构",
+      "B. 网页 DOM 树",
+      "C. 家谱树",
+      "D. 地铁线路图"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 28,
+    "type": "single",
+    "question": "一棵树共有 22 个节点，其中度为 1 的节点有 4 个、度为 3 的节点有 3 个、度为 4 的节点有 2 个，其余都是叶子节点。这棵树的叶子节点数为（ ）。",
+    "options": [
+      "A. 13",
+      "B. 12",
+      "C. 14",
+      "D. 11"
+    ],
+    "answer": "A",
+    "score": 2
+  },
+  {
+    "id": 29,
+    "type": "single",
+    "question": "已知一棵二叉树的前序遍历为 `ABDEGCFH`，中序遍历为 `DBGEACHF`，则其后序遍历为（ ）。",
+    "options": [
+      "A. `D G E B C H F A`",
+      "B. `G D E B H F C A`",
+      "C. `D E G B H F C A`",
+      "D. `D G E B H F C A`"
+    ],
+    "answer": "D",
+    "score": 2
+  },
+  {
+    "id": 30,
+    "type": "single",
+    "question": "某二叉树的前序遍历和中序遍历结果相同（都为 `ABCD`），则这棵二叉树（ ）。",
+    "options": [
+      "A. 是一棵满二叉树",
+      "B. 每个节点都只有左孩子",
+      "C. 不存在这样的二叉树",
+      "D. 每个节点都只有右孩子"
+    ],
+    "answer": "D",
+    "score": 2
+  }
+];
+
+// ===== ② 刷题密码（老师自行设置） =====
+const PASSWORD = "*";
+
+// ===== ③ 解析数据（刷题模式中显示） =====
+// 键为题目 id，只写需要显示解析的题目即可
+const EXPLANATIONS = {
+  "1": "树的性质：边数 = 节点数 - 1 = 50 - 1 = 49（考点：树的最基本性质（边数 = 节点数 - 1）。真题溯源。）",
+  "2": "前序 `ABDCEF` 定根 A；中序 `DBAECF` 分左右：左子树 {D,B}、右子树 {E,C,F}。递归还原：B 左 D，C 左 E 右 F。后序 = 左子树后序(D B) + 右子树后序(E F C) + 根(A) = **D B E F C A**（考点：已知前序 + 中序还原二叉树，再求后序。真题溯源（每年必考）。）",
+  "3": "边数 = 5×2 + 3×3 + 4×1 = 23，节点数 = 23 + 1 = 24；叶子 = 24 - 5 - 3 - 4 = **12**（考点：度与边数的关系（总边数 = Σ度），由边数推节点数。真题溯源。）",
+  "4": "3 个节点的二叉树形态：左子树 2 个（2 种）+ 右 0（1 种）、左 0 + 右 2（2 种）、左 1 + 右 1（1 种），共 2+2+1 = **5** 种（考点：二叉树的形态计数（卡特兰数：1、2、5、14…）。陷阱：左右子树区分，n=3 时是 5 不是 4。）",
+  "5": "深度 k 的二叉树最多 2^k - 1 个节点：2^7 - 1 = **127**（考点：二叉树性质②（深度 k 最多 2^k - 1 个节点）。陷阱：与\"第 k 层最多 2^(k-1) 个\"混淆。）",
+  "6": "n = 15，⌊15/2⌋ = 7，编号 > 7 的全是叶子，8 > 7 → 是叶子节点（考点：完全二叉树编号规律（左孩子 2i、右孩子 2i+1、编号 > ⌊n/2⌋ 为叶子）。真题溯源。）",
+  "7": "n = n₀ + n₁ + n₂，且 n₀ = n₂ + 1：25 = (n₂+1) + 4 + n₂ → n₂ = 10 → n₀ = **11**（考点：n₀ = n₂ + 1 的灵活应用（联立方程）。真题溯源。）",
+  "8": "n₀ = n₂ + 1 = 12 + 1 = 13，总节点数 = n₀ + n₁ + n₂ = 13 + 5 + 12 = **30**（考点：n₀ = n₂ + 1 联立求总节点数。陷阱：记得加上 n₁。）",
+  "10": "完全二叉树叶子数 = ⌈n/2⌉ = ⌈100/2⌉ = **50**（考点：完全二叉树叶子数公式 ⌈n/2⌉。真题溯源。）",
+  "11": "后序 `DEBFCA` 定根 A；中序 `DBEAFC` 分左右：左 {D,B,E}、右 {F,C}。递归：左子树根 B（左 D 右 E），右子树根 C（左 F）。前序 = **A B D E C F**（考点：已知后序 + 中序还原二叉树，求前序。真题溯源。）",
+  "12": "深度最小 = 尽量排满每层：2³ - 1 = 7，正好 7 个节点 → 深度 **3**（⌊log₂7⌋+1 = 3）（考点：深度最小 ⟺ 尽量满（完全二叉树形态）。陷阱：最小 vs 最大深度。）",
+  "13": "第 k 层编号范围 [2^(k-1), 2^k - 1]：第 4 层编号 8–15，10 在其中 → 第 **4** 层（⌊log₂10⌋+1 = 4）（考点：完全二叉树编号与层数的关系。陷阱：第 k 层编号从 2^(k-1) 开始，不是 2^(k-1)+1。）",
+  "14": "深度 5 的完全二叉树：前 4 层必须满（1+2+4+8 = 15），第 5 层至少 1 个 → 最少 **16** 个（考点：完全二叉树节点数范围 [2^(k-1), 2^k - 1]。陷阱：最少 vs 最多、深度 4 满 vs 深度 5 满。）",
+  "15": "无度为 1 的节点 → n = n₀ + n₂ = n₀ + (n₀ - 1) = 8 + 7 = **15**（考点：n₀ = n₂ + 1 在\"无度1节点\"条件下的应用。陷阱：总节点 = n₀ + n₁ + n₂。）",
+  "16": "满二叉树所有非叶子节点都有两个孩子，前序 + 后序可以唯一确定（考点：两种遍历还原二叉树的充分条件。陷阱：前序 + 后序通常不行，只有\"所有非叶子都有两个孩子\"（如满二叉树）才行。）",
+  "17": "满二叉树叶子数 = 2^(k-1) = 2^4 = **16**（全在最底层）（考点：满二叉树性质（叶子数 2^(k-1)）。陷阱：总节点数 2^k - 1 与叶子数 2^(k-1) 混淆。）",
+  "18": "后序 = 左 → 右 → 根，**最后一个一定是根节点**（考点：遍历顺序与根的位置（前序首 = 根、后序末 = 根）。陷阱：层序第一个是根但最后一个不是。）",
+  "19": "完全二叉树编号 i 的父节点 = **⌊i / 2⌋**（考点：完全二叉树编号规律（父 ⌊i/2⌋）。真题溯源。）",
+  "20": "后序 `BDCAFGE` 定根 E；中序 `ABCDEFG` 分左右：左 {A,B,C,D}、右 {F,G}。左子树：后序 BDCA 定根 A，中序 ABCD → A 只有右孩子 C（C 左 B 右 D）；右子树：后序 FG 定根 G，G 左 F。前序 = **E A C B D G F**（考点：已知中序 + 后序还原二叉树。真题溯源。）",
+  "21": "树中任意两个节点之间有且仅有一条路径（连通且无环）（考点：树的基本概念辨析。陷阱：二叉树 ≠ 度为 2 的树（有序性 + 允许度 < 2）。）",
+  "22": "2^k - 1 = 63 → k = 6，叶子数 = 2^(k-1) = 2^5 = **32**（考点：满二叉树公式逆推（由总节点数求深度，再求叶子数）。陷阱：总节点数 2^k - 1 与叶子数 2^(k-1) 混淆。）",
+  "23": "右孩子 = 2i + 1 = 2×6 + 1 = **13**，且 13 ≤ 15 存在（考点：完全二叉树编号规律（右孩子 2i+1，需判断是否越界）。真题溯源。）",
+  "24": "n₀ = n₂ + 1 → n₂ = 5 - 1 = 4；n = n₀ + n₂ = 5 + 4 = **9**（考点：n₀ = n₂ + 1 的逆向应用（已知叶子求节点数）。陷阱：无度1节点时 n = n₀ + n₂。）",
+  "25": "深度 = ⌊log₂n⌋ + 1 = ⌊log₂100⌋ + 1 = 6 + 1 = **7**（2^6 ≤ 100 < 2^7）（考点：完全二叉树深度公式。真题溯源。）",
+  "26": "层序 `ABCDEF`：第二层 B、C；前序 `ABDECF`：B 左 D 右 E，C 左 F。后序 = 左子树(D E B) + 右子树(F C) + 根(A) = **D E B F C A**（考点：层序 + 前序推断树结构，再求后序。陷阱：层序只能确定\"层\"信息，需要结合前序确定左右。）",
+  "28": "总边数 = 4×1 + 3×3 + 2×4 = 21，节点数 = 21 + 1 = 22（吻合）；叶子 = 22 - 4 - 3 - 2 = **13**（考点：多叉树的度 → 边数 → 节点数 → 叶子数。陷阱：总边数 = Σ(度 × 节点数)，不是 Σ节点数。）",
+  "29": "前序定根 A；中序 `DBGE A CHF` 分左右：左 {D,B,G,E}、右 {C,H,F}。左子树 B(D, E(G)) 后序 D G E B；右子树 C(F(H)) 后序 H F C；总后序 = **D G E B H F C A**（考点：已知前序 + 中序还原二叉树，求后序。真题溯源。）",
+  "30": "前序 = 中序说明\"根总是第一个\"，即每棵子树都没有左孩子 → 每个节点**都只有右孩子**（退化成右链）（考点：遍历与树形的关系（退化链表）。陷阱：前序 = 中序 ⟺ 无左子树（全是右孩子）。）",
+  "9": "C 选项是错误说法：深度为 k 的二叉树最多 2^k - 1 个节点，不是 2^k 个（少减了 1）。A（第 i 层≤2^(i-1)）、B（有序树）、D（n₀=n₂+1）均正确。（考点：二叉树性质辨析）",
+  "27": "D 地铁线路图有环（多条线路交叉换乘），不满足「任意两点唯一路径」，不是树。A 文件目录、B DOM 树、C 家谱树都是树结构。（考点：树的判定，陷阱：网状有环结构≠树）"
+};
+function getExplanation(id) { return EXPLANATIONS[id] || ""; }
+
+// ========== State ==========
+const TOTAL = QUESTION_BANK.length;
+let mode = 'practice';
+let practiceAnswers = new Array(TOTAL).fill(null);
+let practiceStartTime = null;
+let quizAnswers = new Array(TOTAL).fill(null);
+let currentIdx = 0;
+let quizUnlocked = false;
+
+const TOTAL_SCORE = QUESTION_BANK.reduce((s, q) => s + q.score, 0);
+
+// ========== Rendering ==========
+function render() {
+  const c = document.getElementById('mainContent');
+  if (mode === 'practice') renderPractice();
+  else if (mode === 'quiz' && !quizUnlocked) renderQuizLocked();
+  else if (mode === 'quiz' && quizUnlocked) renderQuiz();
+}
+
+function renderPractice() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题（每题 2 分，总分 60 分）</p>';
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderQuizLocked() {
+  document.getElementById('pwOverlay').classList.add('show');
+  document.getElementById('mainContent').innerHTML = '<div class="tab-panel active" style="text-align:center;padding:40px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:12px;">🔒</p><p>刷题模式需密码验证</p><p style="font-size:13px;margin-top:4px;">请联系老师获取 6 位密码</p></div>';
+}
+
+function renderQuiz() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let html = '<div class="tab-panel active">';
+  html += renderProgressBar('quiz');
+  html += renderQuestionCard('quiz');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderProgressBar(m) {
+  let html = '<div class="progress-bar">';
+  for (let i = 0; i < TOTAL; i++) {
+    let cls = 'progress-dot';
+    let ans = m === 'practice' ? practiceAnswers[i] : quizAnswers[i];
+    if (i === currentIdx) cls += ' current';
+    else if (ans !== null) cls += ' answered';
+    html += `<div class="${cls}" onclick="${m === 'practice' ? `goPractice(${i})` : `goQuiz(${i})`}" style="cursor:pointer;">${i + 1}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(m) {
+  const q = QUESTION_BANK[currentIdx];
+  const isPractice = m === 'practice';
+  const isQuiz = m === 'quiz';
+  const state = isPractice ? practiceAnswers : quizAnswers;
+  const val = state[currentIdx];
+
+  const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const qText = q.question;
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <span class="q-number">${q.id}</span>
+      <span class="q-badge">选择题 · ${q.score}分</span>
+    </div>
+    <div class="q-text">${qText}</div>`;
+
+  html += '<div class="options">';
+  for (let oi = 0; oi < q.options.length; oi++) {
+    let cls = 'option';
+    if (isQuiz) {
+      if (val !== null) {
+        if (oi === ansIdx) cls += ' correct';
+        if (val === oi && oi !== ansIdx) cls += ' wrong';
+        if (val === oi) cls += ' selected';
+      }
+    } else if (isPractice && val !== null) {
+      if (val === oi) cls += ' selected disabled';
+    }
+    if (isPractice) cls += ' no-feedback';
+    const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+    html += `<button class="${cls}" onclick="${onclick}">
+      <span class="radio"></span><span>${q.options[oi]}</span>
+    </button>`;
+  }
+  html += '</div>';
+
+  // Show explanation in quiz mode
+  if (isQuiz && val !== null && getExplanation(q.id)) {
+    html += '<div class="explanation show"><strong>📖 解析：</strong>' + getExplanation(q.id) + '</div>';
+  }
+
+  // Nav buttons
+  html += '<div class="nav-buttons">';
+  if (isPractice) {
+    html += `<button class="btn-secondary" onclick="prevPractice()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextPractice()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  } else {
+    html += `<button class="btn-secondary" onclick="prevQuiz()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextQuiz()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  }
+  html += '</div>';
+
+  // Practice: submit button
+  if (isPractice) {
+    let answered = practiceAnswers.filter(a => a !== null).length;
+    html += `<div style="text-align:center;margin-top:16px;">
+      <button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">${answered === TOTAL ? '📥 交卷' : '📥 交卷（' + answered + '/' + TOTAL + '）'}</button>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ===== Practice Actions ===== */
+function selectPractice(idx, oi) {
+  practiceAnswers[idx] = oi;
+  if (!practiceStartTime) practiceStartTime = Date.now();
+  render();
+}
+
+function prevPractice() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextPractice() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goPractice(i) { currentIdx = i; render(); }
+
+function submitPractice() {
+  let correct = 0, wrong = 0;
+  let errorItems = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const q = QUESTION_BANK[i];
+    const s = q.score;
+    if (practiceAnswers[i] !== null) {
+      const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      if (practiceAnswers[i] === ansIdx) {
+        correct += s;
+      } else {
+        wrong += s;
+        errorItems.push({ id: q.id, your: q.options[practiceAnswers[i]], correct: q.answer });
+      }
+    } else {
+      wrong += s;
+      errorItems.push({ id: q.id, your: '未答', correct: q.answer });
+    }
+  }
+  const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
+  const rate = TOTAL_SCORE > 0 ? Math.round(correct / TOTAL_SCORE * 100) : 0;
+
+  // Build result overlay content
+  let errHtml = '';
+  if (errorItems.length > 0) {
+    errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
+    for (const e of errorItems) {
+      let correctOpt = '';
+      const q = QUESTION_BANK.find(qq => qq.id === e.id);
+      if (q) correctOpt = q.options.find(o => o.startsWith(q.answer + '.')) || q.answer;
+      errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${correctOpt}</span></div>`;
+    }
+    errHtml += '</details>';
+  }
+
+  document.querySelector('#resultOverlay .overlay-box').innerHTML = 
+    `<button class="overlay-close" onclick="closeResult()">✕</button>
+    <h2>📄 练习报告</h2>
+    <div class="score-big">${correct}/${TOTAL_SCORE}</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong>${PASSWORD}</strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value">${rate}%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value">${elapsed}s</div></div>
+    </div>${errHtml}
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndReset()">重新练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResult()">关闭窗口</button>`;
+  
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+function closeResult() { document.getElementById('resultOverlay').classList.remove('show'); }
+document.getElementById('resultOverlay').addEventListener('click', function(e) { if(e.target===this) closeResult(); });
+
+function closeResultAndSwitchToQuiz() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  quizUnlocked = true;
+  switchMode('quiz');
+}
+
+function closeResultAndReset() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  render();
+}
+
+/* ===== Quiz Actions ===== */
+function selectQuiz(idx, oi) {
+  quizAnswers[idx] = oi;
+  render();
+}
+
+function prevQuiz() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextQuiz() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goQuiz(i) { currentIdx = i; render(); }
+
+/* ===== Password ===== */
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    quizUnlocked = true;
+    document.getElementById('pwOverlay').classList.remove('show');
+    document.getElementById('pwError').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    render();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function closePw() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  switchMode('practice');
+}
+
+/* ===== Mode Switching ===== */
+function switchMode(newMode) {
+  mode = newMode;
+  currentIdx = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === newMode);
+  });
+  if (newMode === 'quiz' && !quizUnlocked) {
+    renderQuizLocked();
+  } else {
+    render();
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+});
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>
