@@ -566,13 +566,6 @@ function submitPractice() {
   const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
   const rate = total > 0 ? Math.round(correct / total * 100) : 0;
 
-  document.getElementById('resultScore').textContent = `${correct}/${total}`;
-  document.getElementById('showPw').textContent = PASSWORD;
-  document.getElementById('resultCorrect').textContent = `${correct}分`;
-  document.getElementById('resultWrong').textContent = `${wrong}分`;
-  document.getElementById('resultRate').textContent = `${rate}%`;
-  document.getElementById('resultTime').textContent = `${elapsed}s`;
-
   // Add error list
   let errHtml = '';
   if (errorItems.length > 0) {
@@ -585,6 +578,7 @@ function submitPractice() {
   document.querySelector('#resultOverlay .overlay-box').innerHTML = 
     `<h2>📄 练习报告</h2>
     <div class="score-big" id="resultScore">${correct}/${total}</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong>${PASSWORD}</strong></p>
     <div class="stat-grid">
       <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
       <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
