@@ -41,7 +41,17 @@ def parse_answer(md):
         num = int(blocks[i])
         ans = blocks[i+1].strip().replace('✅', '').replace('❌', '').strip()
         body = blocks[i+2]
-        # 选项分析表行：| A | 分析 |
+        if ans.upper() in ('T', 'F', '对', '错'):
+            # 判断题：解析为正文（md 中是“原因说明”形式，非表格）——2026-08-06 修复
+            text = body.strip()
+            text = re.sub(r'^-{3,}\s*$', '', text, flags=re.M)   # 去分隔线 ---
+            text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)      # 去加粗
+            text = re.sub(r'`([^`]+)`', r'\1', text)              # 去反引号
+            text = re.sub(r'^>\s*', '', text, flags=re.M)         # 去引用符
+            text = re.sub(r'\n{2,}', '\n', text).strip()
+            res[num] = {'answer': ans, 'expl': text}
+            continue
+        # 选择题：选项分析表行 + 考点
         analyses = []
         for m in re.finditer(r'\|\s*([ABCD])\s*([✅❌]?)\s*\|\s*([^|]+)\|', body):
             letter, mark, text = m.group(1), m.group(2), m.group(3).strip()

@@ -393,7 +393,7 @@ function renderQuestionCard(m) {
   const state = isPractice ? practiceAnswers : quizAnswers;
   const val = state[currentIdx];
 
-  const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
   const qText = q.question;
 
   let html = `<div class="card">
@@ -469,7 +469,7 @@ function submitPractice() {
     const q = QUESTION_BANK[i];
     const s = q.score;
     if (practiceAnswers[i] !== null) {
-      const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
       if (practiceAnswers[i] === ansIdx) {
         correct += s;
       } else {
@@ -490,9 +490,16 @@ function submitPractice() {
     errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
     for (const e of errorItems) {
       let correctOpt = '';
+      let explanation = '';
       const q = QUESTION_BANK.find(qq => qq.id === e.id);
-      if (q) correctOpt = q.options.find(o => o.startsWith(q.answer + '.')) || q.answer;
+      if (q) {
+        // 判断题选项无字母前缀，直接取选项文本（如“✗ 错误”），单选取“X. xxx”
+        const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+        correctOpt = q.options[ansIdx] || q.answer;
+        explanation = getExplanation(q.id);
+      }
       errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${correctOpt}</span></div>`;
+      if (explanation) errHtml += `<div style="padding:2px 0 8px 0;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border);">📖 ${explanation}</div>`;
     }
     errHtml += '</details>';
   }

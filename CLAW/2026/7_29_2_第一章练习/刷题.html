@@ -436,7 +436,7 @@ function renderQuestionCard(m) {
   const state = isPractice ? practiceAnswers : quizAnswers;
   const val = state[currentIdx];
 
-  const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
   const qText = q.question;
 
   let html = `<div class="card">
@@ -512,7 +512,7 @@ function submitPractice() {
     const q = QUESTION_BANK[i];
     const s = q.score;
     if (practiceAnswers[i] !== null) {
-      const ansIdx = q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
       if (practiceAnswers[i] === ansIdx) {
         correct += s;
       } else {

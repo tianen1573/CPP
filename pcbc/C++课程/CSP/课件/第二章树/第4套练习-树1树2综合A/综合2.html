@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>树 综合练习 · 第4套（A卷）</title>  <!-- 如无指定主题，改为：<title>树 综合练习 · 第4套（A卷）</title> -->
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #6366f1;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --correct-bg: #dcfce7;
+    --wrong-bg: #fce4ec;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radius: 12px;
+    --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .app-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.3);
+  }
+  .app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+  .nav-tabs {
+    display: flex; gap: 2px;
+    background: var(--card-bg);
+    padding: 6px 8px;
+    margin: 16px 16px 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .nav-tab {
+    flex: 1; min-width: 80px;
+    padding: 10px 12px;
+    border: none; background: transparent;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+
+  .main-content {
+    max-width: 720px; margin: 0 auto; padding: 0 16px 80px;
+    transition: opacity var(--transition);
+  }
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 16px;
+    transition: var(--transition);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-badge {
+    font-size: 12px; padding: 2px 10px;
+    border-radius: 12px;
+    background: #e2e8f0; color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.7; margin-bottom: 16px;
+  }
+  .q-text code, .q-text pre {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .q-text code { padding: 2px 6px; }
+  .q-text pre {
+    padding: 12px 16px; margin: 8px 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    font-size: 14px; line-height: 1.5;
+    text-align: left; width: 100%;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: #eef2ff; }
+  .option .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #94a3b8; flex-shrink: 0; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .option.selected .radio { border-color: var(--accent); background: var(--accent); }
+  .option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+  .option.selected { border-color: var(--accent); background: #eef2ff; }
+  .option.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.correct .radio { border-color: var(--correct); background: var(--correct); }
+  .option.wrong { border-color: var(--wrong); background: var(--wrong-bg); animation: shake 0.4s ease; }
+  .option.wrong .radio { border-color: var(--wrong); background: var(--wrong); }
+  .option.disabled { cursor: default; opacity: 0.85; }
+  .option.no-feedback { animation: none !important; }
+
+  .explanation {
+    margin-top: 16px; padding: 14px 16px;
+    background: #f8fafc; border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px; line-height: 1.7;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .explanation.show { display: block; }
+
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 20px;
+  }
+  .nav-buttons button {
+    padding: 10px 24px;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    display: flex; gap: 4px; margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: var(--transition);
+    background: #f8fafc;
+  }
+  .progress-dot.answered { background: #eef2ff; border-color: var(--accent); color: var(--accent); }
+  .progress-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .progress-dot.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .progress-dot.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    text-align: center;
+    position: relative;
+  }
+  .overlay-close {
+    position: absolute; top: 12px; right: 14px;
+    width: 32px; height: 32px;
+    border: none; background: #f1f3f6;
+    border-radius: 50%;
+    font-size: 18px; line-height: 1;
+    color: #888; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .overlay-close:hover { background: #e2e6ed; color: #333; }
+  .overlay-box h2 { font-size: 20px; margin-bottom: 12px; }
+  .overlay-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .pw-input {
+    width: 100%; padding: 12px 16px;
+    font-size: 18px; letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .pw-input:focus { border-color: var(--accent); }
+  .pw-error { color: var(--wrong); font-size: 13px; margin-top: 8px; display: none; }
+  .score-big { font-size: 48px; font-weight: 800; color: var(--accent); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .stat-item { padding: 12px; background: #f8fafc; border-radius: 8px; }
+  .stat-item .label { font-size: 12px; color: var(--text-secondary); }
+  .stat-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+  .error-list { margin-top: 16px; text-align: left; }
+  .error-list summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--accent); padding: 8px 0; }
+  .error-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 17px; }
+    .nav-tabs { margin: 12px 8px 0; padding: 4px; }
+    .main-content { padding: 0 8px 60px; }
+    .card { padding: 14px; }
+    .q-text { font-size: 14px; }
+    .option { padding: 10px 12px; font-size: 13px; }
+    .overlay-box { padding: 20px; }
+    .score-big { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>树 综合练习 · 第4套（A卷）</h1>                   <!-- 如无指定主题，改为：📖 M月DD日练习 · 主题 -->
+  <p>${副标题/知识点列表}</p>         <!-- 知识点概览，如：进制转换 · 位运算 · 网络基础 -->
+</div>
+
+<div class="nav-tabs" id="modeTabs">
+  <button class="nav-tab active" data-mode="practice">📝 练习</button>
+  <button class="nav-tab" data-mode="quiz">⚡ 刷题</button>
+</div>
+
+<div class="main-content" id="mainContent"></div>
+
+<!-- 刷题密码弹窗 -->
+<div class="overlay" id="pwOverlay">
+  <div class="overlay-box">
+    <h2>🔒 刷题模式</h2>
+    <p>请输入老师提供的 6 位密码</p>
+    <input type="password" class="pw-input" id="pwInput" maxlength="6" inputmode="numeric" autocomplete="off">
+    <div class="pw-error" id="pwError">❌ 密码错误，请重试</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closePw()">取消</button>
+      <button class="btn-primary" style="flex:1;" onclick="checkPw()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 练习结果弹窗 -->
+<div class="overlay" id="resultOverlay">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeResult()">✕</button>
+    <h2>📄 练习报告</h2>
+    <div class="score-big" id="resultScore">0/0</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong id="showPw"></strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" id="resultCorrect" style="color:var(--correct)">0</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" id="resultWrong" style="color:var(--wrong)">0</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value" id="resultRate">0%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value" id="resultTime">0s</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndReset()">重新练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResult()">关闭窗口</button>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// ===== 使用说明：修改下面三个地方即可 =====
+// =====================================================
+
+// ===== ① 题目数据 =====
+// 格式：{ "id":连续编号, "type":"single"(单选), "question":题目, "options":选项列表, "answer":正确答案字母, "score":分值 }
+// 如需判断题："type":"judge", "options":["✓ 正确","✗ 错误"], "answer":"A"(正确)/"B"(错误)
+// 含程序代码时，用 <pre><code>...</code></pre> 包裹，注意 JS 字符串转义
+const QUESTION_BANK = [{"id": 1, "type": "single", "question": "某公司组织架构是一棵树：董事长为根，共 25 名员工，每名员工至多有一个直接上级（董事长除外）。该公司共有 12 个部门（即 12 个非叶子节点）。则\"上下级关系\"连线共有（ ）条。", "options": ["A. 25", "B. 24", "C. 12", "D. 23"], "answer": "B", "score": 2}, {"id": 2, "type": "single", "question": "一棵深度为 7 的二叉树（根深度为 1）最多有（ ）个节点。", "options": ["A. 63", "B. 64", "C. 127", "D. 128"], "answer": "C", "score": 2}, {"id": 3, "type": "single", "question": "小华用数组按层序存储一棵完全二叉树（编号从 1 开始），总节点数 n = 15。则编号为 8 的节点（ ）。", "options": ["A. 有右孩子", "B. 有左孩子", "C. 是叶子节点", "D. 是编号 4 的右孩子"], "answer": "C", "score": 2}, {"id": 4, "type": "single", "question": "中缀表达式 <code>a * (b + c) / d</code> 对应的后缀表达式为（ ）。", "options": ["A. `abc+*d/`", "B. `ab+c*d/`", "C. `abc+*/d`", "D. `abc*d+/`"], "answer": "A", "score": 2}, {"id": 5, "type": "single", "question": "按哈夫曼算法构造权值 {2, 4, 5, 8} 的哈夫曼树，该树的带权路径长度（WPL）为（ ）。", "options": ["A. 34", "B. 36", "C. 38", "D. 40"], "answer": "B", "score": 2}, {"id": 6, "type": "single", "question": "依次将 6, 2, 8, 1, 4, 7, 9 插入一棵空的二叉搜索树（BST），插入完成后这棵树的根节点是（ ）。", "options": ["A. 2", "B. 8", "C. 1", "D. 6"], "answer": "D", "score": 2}, {"id": 7, "type": "single", "question": "一棵二叉树的前序遍历为 <code>A B D H E C F G</code>，中序遍历为 <code>H D B E A F C G</code>，则它的后序遍历为（ ）。", "options": ["A. `H D E B G C A F`", "B. `H D G E B C F A`", "C. `H D E B F G C A`", "D. `H D E B G C F A`"], "answer": "C", "score": 2}, {"id": 8, "type": "single", "question": "一棵有 1000 个节点的完全二叉树，其深度为（ ）（根的深度为 1）。", "options": ["A. 10", "B. 9", "C. 11", "D. 12"], "answer": "A", "score": 2}, {"id": 9, "type": "single", "question": "计算后缀表达式 <code>8 2 5 + * 3 /</code> 的值（整除），结果为（ ）。", "options": ["A. 19", "B. 20", "C. 56", "D. 18"], "answer": "D", "score": 2}, {"id": 10, "type": "single", "question": "一棵二叉搜索树的中序遍历为 <code>2, 5, 7, 9, 12, 15, 18</code>，则这棵树中第 4 小的元素是（ ）。", "options": ["A. 9", "B. 7", "C. 12", "D. 15"], "answer": "A", "score": 2}, {"id": 11, "type": "single", "question": "假设字母表 {a, b, c, d, e} 在字符串中出现的频率分别为 10%、15%、30%、16%、29%。若使用哈夫曼编码方式对字母进行不定长的二进制编码，则字母 d 的编码长度为（ ）位。（真题溯源：CSP-J 2022）", "options": ["A. 1", "B. 2", "C. 3", "D. 2 或 3"], "answer": "B", "score": 2}, {"id": 12, "type": "single", "question": "前缀表达式 <code>* + 5 3 - 8 4</code> 的值是（ ）。", "options": ["A. 30", "B. 31", "C. 32", "D. 33"], "answer": "C", "score": 2}, {"id": 13, "type": "single", "question": "一棵二叉树的中序遍历为 <code>D B E A C F</code>，后序遍历为 <code>D E B F C A</code>，则它的前序遍历为（ ）。", "options": ["A. `A B D E C F`", "B. `A B D C E F`", "C. `A B E D C F`", "D. `A D B E C F`"], "answer": "A", "score": 2}, {"id": 14, "type": "single", "question": "一棵树中，度为 2 的节点有 4 个、度为 3 的节点有 3 个、度为 1 的节点有 5 个，其余都是叶子节点。这棵树的叶子节点数为（ ）。", "options": ["A. 10", "B. 11", "C. 12", "D. 13"], "answer": "B", "score": 2}, {"id": 15, "type": "single", "question": "一棵表达式树的后序遍历（即后缀表达式）为 <code>a b * c +</code>，它对应的中缀表达式是（ ）。", "options": ["A. `a + b * c`", "B. `a * b + c`", "C. `(a + b) * c`", "D. `a * (b + c)`"], "answer": "B", "score": 2}, {"id": 16, "type": "single", "question": "一棵哈夫曼树共有 15 个节点，则它的叶子节点数为（ ）。", "options": ["A. 8", "B. 7", "C. 9", "D. 15"], "answer": "A", "score": 2}, {"id": 17, "type": "single", "question": "一棵有 2026 个节点的完全二叉树，其叶子节点数为（ ）。", "options": ["A. 1012", "B. 1014", "C. 1024", "D. 1013"], "answer": "D", "score": 2}, {"id": 18, "type": "single", "question": "一棵二叉搜索树的结构为：根节点 30，左孩子 15（其左 8、右 22），右孩子 45（其左 38、右 52）。在该树中查找元素 38，需要与节点值比较（ ）次。", "options": ["A. 2", "B. 4", "C. 5", "D. 3"], "answer": "D", "score": 2}, {"id": 19, "type": "single", "question": "下列各组编码中，<b>是</b>前缀编码（解码无歧义）的是（ ）。", "options": ["A. {0, 01, 10}", "B. {0, 10, 110, 1110}", "C. {0, 1, 10}", "D. {1, 01, 00}"], "answer": "D", "score": 2}, {"id": 20, "type": "single", "question": "一组字符 {a, b, c, d} 的频率分别为 0.4、0.3、0.2、0.1。按哈夫曼编码（左 0 右 1），字符 d 的编码可能是（ ）。", "options": ["A. 0", "B. 10", "C. 110", "D. 1110"], "answer": "C", "score": 2}, {"id": 21, "type": "judge", "question": "一棵有 n 个节点的树，一定有 n−1 条边。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 22, "type": "judge", "question": "深度为 k 的二叉树（根深度为 1）至少需要 k 个节点。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 23, "type": "judge", "question": "完全二叉树一定是满二叉树。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 24, "type": "judge", "question": "已知一棵二叉树的前序遍历和后序遍历，一定能唯一确定这棵二叉树。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 25, "type": "judge", "question": "对二叉搜索树进行中序遍历，得到的序列一定是递增的。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 26, "type": "judge", "question": "哈夫曼编码中，频率越高的字符，其编码长度一定比频率低的字符短。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 27, "type": "judge", "question": "后缀表达式的求值过程中需要使用括号来确定运算顺序。", "options": ["✓ 正确", "✗ 错误"], "answer": "B", "score": 2}, {"id": 28, "type": "judge", "question": "哈夫曼树中不存在度为 1 的节点。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 29, "type": "judge", "question": "一棵二叉树第 i 层（根为第 1 层）最多有 2^(i−1) 个节点。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}, {"id": 30, "type": "judge", "question": "满二叉树一定是完全二叉树。", "options": ["✓ 正确", "✗ 错误"], "answer": "A", "score": 2}];
+
+// ===== ② 刷题密码（老师自行设置） =====
+const PASSWORD = "480425";
+
+// ===== ③ 解析数据（刷题模式中显示） =====
+// 键为题目 id，只写需要显示解析的题目即可
+const EXPLANATIONS = {"1": "A：25：误把边数当节点数；B✅：24：树中边数 = 节点数 − 1 = 25 − 1 = 24（12 个部门是干扰信息）；C：12：误把部门数当边数；D：23：误把\"员工数减 2\"当边数【考点：树的边数公式（n 个节点 n−1 条边）】", "2": "A：63：误用 2^6 − 1（把深度 7 当成 6）；B：64：误用 2^6（只算一层）；C✅：127：深度 k 的二叉树最多 2^k − 1 = 127 个节点；D：128：误用 2^7（忘了减 1）【考点：二叉树深度与最大节点数（2^k − 1）】", "3": "A：错：编号 8 的右孩子编号 2×8+1 = 17 > 15，不存在；B：错：编号 8 的左孩子编号 2×8 = 16 > 15，不存在；C✅：编号 8 的左右孩子编号均超过总节点数 15，所以 8 是叶子节点；D：错：编号 4 的右孩子是 2×4+1 = 9，不是 8【考点：完全二叉树层序编号（左孩子 2i、右孩子 2i+1、孩子编号超 n 即为叶子）】", "4": "A✅：`a*(b+c)/d` → `a b c + * d /`：先 (b+c)，再乘 a，最后除以 d；B：`ab+c*d/`：把 a*(b+c) 写成了 (a+b)*c；C：`abc+*/d`：运算符顺序错（* 和 / 位置颠倒）；D：`abc*d+/`：先算了 b*c（忽略了括号）【考点：中缀转后缀（括号优先、乘除同级从左到右）】", "5": "A：34：把权值 2 误放第 2 层：8×1 + 5×2 + 2×2 + 4×3 = 34；B✅：36：构造 2+4=6 → 5+6=11 → 8+11=19；WPL = 8×1 + 5×2 + 2×3 + 4×3 = 36；C：38：把所有叶子提前一层：8×2 + 5×2 + 2×2 + 4×2 = 38；D：40：把权值 4 的层数误算为 4：36 + 4 = 40【考点：哈夫曼构造 + WPL 计算】", "6": "A：2：误以为根是第一次比较后的节点；B：8：误以为根是最大元素；C：1：误以为根是最小元素；D✅：BST 构建时第一个插入的元素就是根：6 最先插入，后续元素都挂在它下面【考点：BST 构建（根 = 第一个插入元素；插入顺序决定树形）】", "7": "A：H D E B G C A F：右子树内部顺序错（C、G、A 次序乱）；B：H D G E B C F A：左子树 G、E 错位；C✅：还原：A 根，左 {H,D,B,E} 右 {F,C,G}；B 的左 D(H)、右 E；C 的左 F、右 G。后序 = 左后 H D E B + 右后 F G C + 根 A = H D E B F G C A；D：H D E B G C F A：右子树后序误写为 G C F（正确为 F G C）【考点：前序 + 中序还原二叉树（真题高频）】", "8": "A✅：⌊log₂1000⌋ + 1 = 9 + 1 = 10（2⁹ = 512 ≤ 1000 < 2¹⁰ = 1024）；B：9：忘了加 1；C：11：误算 log₂1000 = 10；D：12：多算了一层【考点：完全二叉树深度 ⌊log₂n⌋ + 1】", "9": "A：19：整除时误算 56÷3 = 19（进位）；B：20：误算 8×(2+5)÷3 为 60÷3；C：56：只算了 8×(2+5)，漏掉除以 3；D✅：2+5=7 → 8×7=56 → 56÷3 = 18（整除）【考点：后缀表达式求值（含整除陷阱）】", "10": "A✅：BST 中序遍历 = 递增序列，第 4 个元素 9 就是第 4 小；B：7：第 3 小；C：12：第 5 小；D：15：第 6 小【考点：BST 中序有序 + 第 k 小 = 中序第 k 个】", "11": "A：1：只有频率最高的 e（29%）可能 1 位；B✅：构造：10%+15%=25% → 16%+25%=41% → 29%+41%=70% → 30%+70%=100%；d(16%) 深度 2，编码 2 位；C：3：误以为 d 与最低频字符同层；D：2 或 3：注意该选项是干扰——按题目给定频率构造，d 的编码长度确定为 2【考点：哈夫曼编码长度（真题溯源：CSP-J 2022 第 7 题）】", "12": "A：30：误算 (5+3)×(8−4) 时漏了一步；B：31：计算失误；C✅：从右到左：8,4 入栈遇 `-` 弹 8、4 算 4；5,3 入栈遇 `+` 弹 5、3 算 8；遇 `*` 弹 8、4 算 32；D：33：计算失误【考点：前缀表达式求值（从右到左、先弹左操作数）】", "13": "A✅：后序末 A 为根，中序左 {D,B,E} 右 {C,F}；B(D,E)、C(,F)；前序 = A B D E C F；B：A B D C E F：右子树内部顺序错；C：A B E D C F：左子树 D、E 错位；D：A D B E C F：左子树根错（应是 B）【考点：中序 + 后序还原二叉树】", "14": "A：10：只加了度 2 和度 3 的数量；B✅：n₀ = n₂ + 2n₃ + 1 = 4 + 6 + 1 = 11；C：12：误用 n₀ = n₂ + n₃ + 1；D：13：误把度 1 节点也算进去【考点：树的度与叶子计数（推广公式 n₀ = n₂ + 2n₃ + … + 1）】", "15": "A：`a + b * c`：是后缀 `a b c * +` 对应的中缀，不是本题；B✅：`a b * c +` = 先算 a*b，再加 c → `a * b + c`；C：`(a + b) * c`：是后缀 `a b + c *`；D：`a * (b + c)`：是后缀 `a b c + *`【考点：表达式树 ↔ 后缀表达式 ↔ 中缀表达式互转】", "16": "A✅：2n − 1 = 15 → n = 8 个叶子；B：7：误用 (15−1)/2 再减 1；C：9：误用 (15+3)/2；D：15：误以为节点数 = 叶子数【考点：哈夫曼树节点数 = 2n − 1（反推叶子数）】", "17": "A：1012：误用 ⌊n/2⌋；B：1014：误用 ⌊n/2⌋+2；C：1024：误用 2^10；D✅：完全二叉树叶子数 = ⌈n/2⌉ = ⌈2026/2⌉ = 1013【考点：完全二叉树叶子数 ⌈n/2⌉】", "18": "A：2：漏数与根的第一次比较；B：4：把空指针判断也算作比较；C：5：多算了一次；D✅：38 < 30？否 → 到右子树；38 < 45？是 → 到左子树；38 = 38 命中。共 3 次【考点：BST 查找比较次数 = 查找路径长度 + 1】", "19": "A：0 是 01 的前缀 → 不是前缀编码；B：10 是 110 的前缀 → 不是前缀编码；C：0 和 1 都是 10 的前缀 → 不是前缀编码；D✅：1 与 0 开头不冲突；01 与 00 第二位区分 → 是前缀编码【考点：前缀编码判定（任一编码不是另一编码的前缀）】", "20": "A：0：是频率最高字符 a（0.4）的编码；B：10：是频率次高字符 b（0.3）的编码；C✅：构造：0.1+0.2=0.3 → 0.3+0.3=0.6 → 0.4+0.6=1.0；d(0.1) 在深度 3，编码 110；D：1110：4 位编码，d 不会那么深【考点：哈夫曼编码构造 + 特定字符编码值】", "21": "A✅：树是连通无环图，n 个节点恰有 n−1 条边（边数 = 节点数 − 1 是树的基本性质，可用数学归纳法证明）【考点：树的边数公式】", "22": "A✅：深度为 k 的二叉树每层至少 1 个节点，最少的情况是一条链：k 个节点排成 k 层，所以至少需要 k 个节点【考点：二叉树深度与最少节点数】", "23": "B✅：完全二叉树只要求除最后一层外全满、最后一层从左到右连续排列（可以不满）；满二叉树要求每一层都满。完全二叉树不一定是满二叉树，如 3 个节点的完全二叉树就不是满二叉树（满的反面例子：满二叉树一定是完全二叉树）【考点：完全二叉树与满二叉树区分】", "24": "B✅：仅凭前序 + 后序无法唯一确定二叉树：如只有左子树的链和只有右子树的链，前序后序完全相同但树形不同。要唯一确定二叉树，必须包含中序遍历（前序+中序 或 后序+中序）【考点：遍历还原的确定性】", "25": "A✅：BST 的性质是左子树所有节点 < 根 < 右子树所有节点，中序遍历按“左根右”输出，必然得到严格递增序列【考点：BST 中序有序】", "26": "B✅：“一定更短”太绝对。哈夫曼编码只保证频率越高的字符编码长度不更长（非严格单调）：同频字符可能等长，不同频也可能因合并顺序出现等长情况。正确表述是“频率越高，编码长度不会更长”【考点：哈夫曼编码单调性（高频编码不更长）】", "27": "B✅：后缀表达式把运算符的优先级和结合性隐含在操作数顺序中，求值时只需用栈：遇操作数入栈、遇运算符弹出两个操作数计算，完全不需要括号【考点：后缀表达式性质】", "28": "A✅：哈夫曼树是严格二叉树（每次合并两棵子树，内部节点度均为 2），因此不存在度为 1 的节点【考点：哈夫曼树性质】", "29": "A✅：第 i 层（根为第 1 层）最多 2^(i−1) 个节点：第 1 层 2⁰=1，第 2 层 2¹=2，…，每层最多是上一层两倍【考点：二叉树层节点数上限】", "30": "A✅：满二叉树每一层都满，必然满足完全二叉树“除最后一层外全满、最后一层靠左”的条件，所以满二叉树一定是完全二叉树（反之不成立）【考点：满二叉树 ⊂ 完全二叉树】"};
+function getExplanation(id) { return EXPLANATIONS[id] || ""; }
+
+// ========== State ==========
+const TOTAL = QUESTION_BANK.length;
+let mode = 'practice';
+let practiceAnswers = new Array(TOTAL).fill(null);
+let practiceStartTime = null;
+let quizAnswers = new Array(TOTAL).fill(null);
+let currentIdx = 0;
+let quizUnlocked = false;
+
+const TOTAL_SCORE = QUESTION_BANK.reduce((s, q) => s + q.score, 0);
+
+// ========== Rendering ==========
+function render() {
+  const c = document.getElementById('mainContent');
+  if (mode === 'practice') renderPractice();
+  else if (mode === 'quiz' && !quizUnlocked) renderQuizLocked();
+  else if (mode === 'quiz' && quizUnlocked) renderQuiz();
+}
+
+function renderPractice() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let answered = practiceAnswers.filter(a => a !== null).length;
+  let html = '<div class="tab-panel active">';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">已答 ' + answered + '/' + TOTAL + ' 题（每题 2 分，总分 60 分）</p>'; // ⚠️ 生成时替换 2、60 为实际分值（2026-08-05 提醒）
+  html += renderProgressBar('practice');
+  html += renderQuestionCard('practice');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderQuizLocked() {
+  document.getElementById('pwOverlay').classList.add('show');
+  document.getElementById('mainContent').innerHTML = '<div class="tab-panel active" style="text-align:center;padding:40px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:12px;">🔒</p><p>刷题模式需密码验证</p><p style="font-size:13px;margin-top:4px;">请联系老师获取 6 位密码</p></div>';
+}
+
+function renderQuiz() {
+  const c = document.getElementById('mainContent');
+  if (currentIdx >= TOTAL) currentIdx = TOTAL - 1;
+  if (currentIdx < 0) currentIdx = 0;
+
+  let html = '<div class="tab-panel active">';
+  html += renderProgressBar('quiz');
+  html += renderQuestionCard('quiz');
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+function renderProgressBar(m) {
+  let html = '<div class="progress-bar">';
+  for (let i = 0; i < TOTAL; i++) {
+    let cls = 'progress-dot';
+    let ans = m === 'practice' ? practiceAnswers[i] : quizAnswers[i];
+    if (i === currentIdx) cls += ' current';
+    else if (ans !== null) cls += ' answered';
+    html += `<div class="${cls}" onclick="${m === 'practice' ? `goPractice(${i})` : `goQuiz(${i})`}" style="cursor:pointer;">${i + 1}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(m) {
+  const q = QUESTION_BANK[currentIdx];
+  const isPractice = m === 'practice';
+  const isQuiz = m === 'quiz';
+  const state = isPractice ? practiceAnswers : quizAnswers;
+  const val = state[currentIdx];
+
+  const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+  const qText = q.question;
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <span class="q-number">${q.id}</span>
+      <span class="q-badge">选择题 · ${q.score}分</span>
+    </div>
+    <div class="q-text">${qText}</div>`;
+
+  html += '<div class="options">';
+  for (let oi = 0; oi < q.options.length; oi++) {
+    let cls = 'option';
+    if (isQuiz) {
+      if (val !== null) {
+        if (oi === ansIdx) cls += ' correct';
+        if (val === oi && oi !== ansIdx) cls += ' wrong';
+        if (val === oi) cls += ' selected';
+      }
+    } else if (isPractice && val !== null) {
+      if (val === oi) cls += ' selected'; // 练习模式可反复修改选项（2026-08-05 修复：去掉 disabled 锁定）
+    }
+    if (isPractice) cls += ' no-feedback';
+    const onclick = isPractice ? `selectPractice(${currentIdx}, ${oi})` : `selectQuiz(${currentIdx}, ${oi})`;
+    html += `<button class="${cls}" onclick="${onclick}">
+      <span class="radio"></span><span>${q.options[oi]}</span>
+    </button>`;
+  }
+  html += '</div>';
+
+  // Show explanation in quiz mode
+  if (isQuiz && val !== null && getExplanation(q.id)) {
+    html += '<div class="explanation show"><strong>📖 解析：</strong>' + getExplanation(q.id) + '</div>';
+  }
+
+  // Nav buttons
+  html += '<div class="nav-buttons">';
+  if (isPractice) {
+    html += `<button class="btn-secondary" onclick="prevPractice()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextPractice()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  } else {
+    html += `<button class="btn-secondary" onclick="prevQuiz()" ${currentIdx === 0 ? 'disabled' : ''}>← 上一题</button>`;
+    html += `<button class="btn-secondary" onclick="nextQuiz()" ${currentIdx >= TOTAL - 1 ? 'disabled' : ''}>下一题 →</button>`;
+  }
+  html += '</div>';
+
+  // Practice: submit button
+  if (isPractice) {
+    let answered = practiceAnswers.filter(a => a !== null).length;
+    html += `<div style="text-align:center;margin-top:16px;">
+      <button class="btn-primary" onclick="submitPractice()" style="padding:12px 40px;font-size:16px;">${answered === TOTAL ? '📥 交卷' : '📥 交卷（' + answered + '/' + TOTAL + '）'}</button>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ===== Practice Actions ===== */
+function selectPractice(idx, oi) {
+  practiceAnswers[idx] = oi;
+  if (!practiceStartTime) practiceStartTime = Date.now();
+  render();
+}
+
+function prevPractice() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextPractice() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goPractice(i) { currentIdx = i; render(); }
+
+function submitPractice() {
+  let correct = 0, wrong = 0;
+  let errorItems = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const q = QUESTION_BANK[i];
+    const s = q.score;
+    if (practiceAnswers[i] !== null) {
+      const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+      if (practiceAnswers[i] === ansIdx) {
+        correct += s;
+      } else {
+        wrong += s;
+        errorItems.push({ id: q.id, your: q.options[practiceAnswers[i]], correct: q.answer });
+      }
+    } else {
+      wrong += s;
+      errorItems.push({ id: q.id, your: '未答', correct: q.answer });
+    }
+  }
+  const elapsed = practiceStartTime ? Math.floor((Date.now() - practiceStartTime) / 1000) : 0;
+  const rate = TOTAL_SCORE > 0 ? Math.round(correct / TOTAL_SCORE * 100) : 0;
+
+  // Build result overlay content
+  let errHtml = '';
+  if (errorItems.length > 0) {
+    errHtml = '<details class="error-list"><summary>❌ 查看错题（' + errorItems.length + ' 题）</summary>';
+    for (const e of errorItems) {
+      let correctOpt = '';
+      let explanation = '';
+      const q = QUESTION_BANK.find(qq => qq.id === e.id);
+      if (q) {
+        // 判断题选项无字母前缀，直接取选项文本（如“✗ 错误”），单选取“X. xxx”
+        const ansIdx = q.type === 'judge' ? (q.answer === 'A' ? 0 : 1) : q.options.findIndex(o => o.startsWith(q.answer + '.'));
+        correctOpt = q.options[ansIdx] || q.answer;
+        explanation = getExplanation(q.id);
+      }
+      errHtml += `<div class="error-item"><span>第 ${e.id} 题</span><span>你的答案：${e.your}　正确：${correctOpt}</span></div>`;
+      if (explanation) errHtml += `<div style="padding:2px 0 8px 0;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border);">📖 ${explanation}</div>`;
+    }
+    errHtml += '</details>';
+  }
+
+  document.querySelector('#resultOverlay .overlay-box').innerHTML = 
+    `<button class="overlay-close" onclick="closeResult()">✕</button>
+    <h2>📄 练习报告</h2>
+    <div class="score-big">${correct}/${TOTAL_SCORE}</div>
+    <p style="font-size:13px;color:#6366f1;margin-top:8px;">🔐 刷题密码：<strong>${PASSWORD}</strong></p>
+    <div class="stat-grid">
+      <div class="stat-item"><div class="label">正确</div><div class="value" style="color:var(--correct)">${correct}分</div></div>
+      <div class="stat-item"><div class="label">错误</div><div class="value" style="color:var(--wrong)">${wrong}分</div></div>
+      <div class="stat-item"><div class="label">正确率</div><div class="value">${rate}%</div></div>
+      <div class="stat-item"><div class="label">用时</div><div class="value">${elapsed}s</div></div>
+    </div>${errHtml}
+    <button class="btn-primary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndSwitchToQuiz()">🔓 进入刷题模式看答案</button>
+    <button class="btn-secondary" style="width:100%;margin-bottom:8px;" onclick="closeResultAndReset()">重新练习</button>
+    <button class="btn-secondary" style="width:100%;" onclick="closeResult()">关闭窗口</button>`;
+  
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+function closeResult() { document.getElementById('resultOverlay').classList.remove('show'); render(); } // 2026-08-05 修复：返回后刷新状态，保证可再次交卷
+document.getElementById('resultOverlay').addEventListener('click', function(e) { if(e.target===this) closeResult(); });
+
+function closeResultAndSwitchToQuiz() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  quizUnlocked = true;
+  switchMode('quiz');
+}
+
+function closeResultAndReset() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  practiceAnswers = new Array(TOTAL).fill(null);
+  practiceStartTime = null;
+  currentIdx = 0;
+  render();
+}
+
+/* ===== Quiz Actions ===== */
+function selectQuiz(idx, oi) {
+  quizAnswers[idx] = oi;
+  render();
+}
+
+function prevQuiz() { if (currentIdx > 0) { currentIdx--; render(); } }
+function nextQuiz() { if (currentIdx < TOTAL - 1) { currentIdx++; render(); } }
+function goQuiz(i) { currentIdx = i; render(); }
+
+/* ===== Password ===== */
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    quizUnlocked = true;
+    document.getElementById('pwOverlay').classList.remove('show');
+    document.getElementById('pwError').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    render();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function closePw() {
+  document.getElementById('pwOverlay').classList.remove('show');
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  switchMode('practice');
+}
+
+/* ===== Mode Switching ===== */
+function switchMode(newMode) {
+  mode = newMode;
+  currentIdx = 0;
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === newMode);
+  });
+  if (newMode === 'quiz' && !quizUnlocked) {
+    renderQuizLocked();
+  } else {
+    render();
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchMode(tab.dataset.mode));
+});
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>
